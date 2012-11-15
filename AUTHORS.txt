@@ -1,0 +1,5 @@
+(* OASIS_START *)
+(* DO NOT EDIT (digest: e8e6f6ee8a12063f1772f011bc5545a2) *)
+Authors of pgn
+Kakadu
+(* OASIS_STOP *)

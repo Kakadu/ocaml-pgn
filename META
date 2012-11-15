@@ -1,0 +1,12 @@
+# OASIS_START
+# DO NOT EDIT (digest: 8f7348672b2a175a641e185f439c28ce)
+version = "0.1"
+description = "Parser for chess Portable Game Notation (PGN)"
+requires = "camlp4"
+archive(byte) = "pgn.cma"
+archive(byte, plugin) = "pgn.cma"
+archive(native) = "pgn.cmxa"
+archive(native, plugin) = "pgn.cmxs"
+exists_if = "pgn.cma"
+# OASIS_STOP
+

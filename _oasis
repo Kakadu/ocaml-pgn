@@ -1,0 +1,27 @@
+OASISFormat: 0.3
+Name:        pgn
+Version:     0.1
+Synopsis:    Parser for chess Portable Game Notation (PGN)
+Authors:     Kakadu
+License:     LGPL-2.1 with OCaml linking exception
+Plugins:     StdFiles (0.3), META (0.3), DevFiles (0.3)
+
+Library pgn
+  Path:             .
+  BuildTools:       ocamlbuild
+  Modules:          PgnParser
+  BuildTools:       ocamlbuild, camlp4o
+  InternalModules:  PgnLexer
+  BuildDepends:     camlp4
+  
+Executable test_runner
+  Path:         test
+  MainIs:       run.ml
+  Install:      false
+  BuildDepends: camlp4
+  BuildTools:   ocamlbuild, camlp4o
+
+Test test_runner
+  Command:          $test_runner
+  WorkingDirectory: test
+
