@@ -11,6 +11,8 @@ let () = Arg.parse
 
 let () = Pgn.parse_file "CapablancaYaffe.pgn" 
 let () = Pgn.parse_file "test1.pgn" 
+let () = Pgn.parse_file "game.pgn" 
+let () = Pgn.parse_file "game2.pgn" 
 
 
 let report_error ~msg line = 

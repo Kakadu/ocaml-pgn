@@ -49,7 +49,9 @@ ostap (
 let (_: (_, string,_) Ostap.Combinators.parse) = move
 
 ostap (
-    result_in_quotes: x:("\"1-0\"" | "\"0-1\"" | "\"S-S\"") { x |> repr |> remove_quotes };
+    result_in_quotes: x:("\"1-0\"" | "\"0-1\"" | "\"1/2-1/2\"" | "\"S-S\"") { 
+      x |> repr |> remove_quotes 
+    };
     result: x:("1-0" | "0-1" | "S-S") { x |> repr };
     
     tag: "[" "Result" r:result_in_quotes "]"           { ("Result", r) }
@@ -82,3 +84,4 @@ let file =
     file: game+
   ) in
   file
+

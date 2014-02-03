@@ -24,7 +24,7 @@ class ['ans, 'arg] lexer s =
     method getSTRINGLITERAL = self#get "stringLiteral" stringLiteral
     method getHORIZ     = self#get "horizontal" (Str.regexp "(1-8)")
     method getSTRINGINQUOTES = 
-      let ans = self#get "stringInQuotes"  (Str.regexp "\"\\([0-9a-zA-Z\?\'\.\,\ ]\\)*\"") in
+      let ans = self#get "stringInQuotes"  (Str.regexp "\"\\([0-9a-zA-Z\?\'\.\,\ \/\|]\\)*\"") in
       ans 
 
   end
