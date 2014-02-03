@@ -9,9 +9,9 @@ Plugins:     StdFiles (0.3), META (0.3), DevFiles (0.3)
 Library pgn
   Path:             .
   BuildTools:       ocamlbuild
-  Modules:          PgnParser
+  Modules:          PgnParser, PgnLexer
   BuildTools:       ocamlbuild, camlp4o
-  InternalModules:  PgnLexer
+  InternalModules:  
   BuildDepends:     camlp4
   
 Executable test_runner
@@ -23,5 +23,5 @@ Executable test_runner
 
 Test test_runner
   Command:          $test_runner
-  WorkingDirectory: test
+  WorkingDirectory: .
 
