@@ -1,0 +1,4 @@
+true: package(ostap), rectypes, threads, package(unix)
+<parser.ml>: syntax(camlp5o), package(ostap.syntax)
+true: debug
+true: verbose

@@ -1,0 +1,40 @@
+[Event "Challenge 9172449"]
+[Site "online arena"]
+[Date "2013.11.30"]
+[Round "1"]
+[White "selandros"]
+[Black "francescoadriano"]
+[ECO "D53"]
+[WhiteElo "1787"]
+[BlackElo "1814"]
+[PlyCount "53"]
+[EventDate "2013.??.??"]
+[Result "1-0" ]
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Be7 5. Nf3 dxc4 6. e4 c6 7. Bxc4 Nbd7 8. e5
+Nd5 9. Bxe7 Qxe7 10. O-O Qb4 11. Nxd5 exd5 12. Bb3 O-O 13. Qd3 Qe7 14. Bc2 g6
+15. Qe3 Kg7 16. Rae1 Rg8 17. Qf4 Nf8 18. Re3 Ne6 19. Qg3 Bd7 20. h4 Raf8 21. h5
+c5 22. hxg6 hxg6 23. Nh4 Qg5 24. Qxg5 Nxg5 25. Rg3 Ne6 26. Nf5  Kh7 27. Rh3#
+1-0
+
+[Event "State Ch."]
+[Site "New York, USA"]
+[Date "1910.??.??"]
+[Round "?"]
+[White "Capablanca"]
+[Black "Jaffe"]
+[Result "1-0"]
+[ECO "D46"]
+[Opening "Queen's Gambit Dec."]
+[Annotator "Reinfeld, Fred"]
+[WhiteTitle "GM"]
+[WhiteCountry "Cuba"]
+[BlackCountry "United States"]
+
+1. d4 d5 2. Nf3 Nf6 3. e3 c6 4. c4 e6
+5. Nc3 Nbd7 6. Bd3 Bd6 7. O-O O-O
+8. e4 dxe4 9. Nxe4 Nxe4 10. Bxe4 Nf6 11. Bc2
+(* {With a view to} <> 12. Qd3 {and} <> 13. Bg5 {, threatening}
+<> 14. Bxf6 {and} <> 16. Qxh7#)
+11... h6
+{Black meets the threat but weakens his \K-side.}
+
