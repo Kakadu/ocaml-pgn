@@ -9,6 +9,14 @@ end
 let repr = Matcher.Token.repr
 let make_reason msg l = new Reason.t (Msg.make msg [||] (Matcher.Token.loc l))
 
+let is_digit = function '0'..'9' -> true  | _ -> false
+let good_nag_str s =
+  let len = String.length s in
+  (len >=2) && (len <=4) && (
+    let ans = ref true in
+    for i=2 to len-1 do ans := !ans && is_digit s.[i] done;
+    !ans
+   )
 
 (* convert result of parsing to string *)
 let string_of_tagresult (a,b) = sprintf "(%s, %s)" a b
@@ -18,12 +26,16 @@ let remove_quotes s  =
   if len < 2 then failwith "Wrong argument of remove_quotes"
   else String.sub s 1 (len-2)
 
+let no1 s = String.sub s 1 (String.length s - 1)
+
 let () = ()
 
 ostap (
   figure: a:("K" | "Q" | "R" | "N" | "B") { repr a };
   vert: x:("a"|"b"|"c"|"d"|"e"|"f"|"g"|"h") { repr x };
-
+  nag:  x:NAG => { good_nag_str (repr x) } => {
+    x |> repr |> no1 |> int_of_string
+  };
   hor:  x:("1"|"2"|"3"|"4"|"5"|"6"|"7"|"8")  { repr x };
   move_postfix: "#" { () } | "+" {()} | -"=" figure {()} | "++" { () };
   move_itself:
@@ -41,11 +53,12 @@ ostap (
         sprintf "%s%s%s%s" (Option.get ~default:"" f)
           (match takes with Some x -> repr x | None -> "") v h
     };
-  comment : "{" c:COMMENT "}" { let ans = repr c in printf "Comment parsed: %s\n%!" ans; ans  };
+  comment : "{" c:COMMENT "}" { repr c };
   move:
-    pre_ann:(comment?)  m:move_itself post_ann:(comment?)  {
-      printf "move %s is parsed \n%!" m ;
+    pre_ann:(comment?)  m:move_itself all_nags:( nag* ) post_ann:(comment?)  {
+      (*printf "move %s is parsed. nags length = %d\n%!" m (List.length all_nags); *)
       { move=m
+      ; nags = all_nags
       ; pre_ann = Option.get ~default:"" pre_ann
       ; post_ann = Option.get ~default:"" post_ann
       ; aux =  []
@@ -69,13 +82,12 @@ ostap (
     tag: "[" "Result" r:result_in_quotes "]"           { ("Result", r) }
        | "[" x:TAGNAME y:STRINGINQUOTES "]"  { (repr x, y |> repr |> remove_quotes) };
     game_postfix:
-      r:result { print_endline "Game_postfix 1 parsed"; Some r }
+      r:result { (*print_endline "Game_postfix 1 parsed"; *)Some r }
     | "*"      { None }
-    | $        { print_endline "Game_postfix 3 parsed"; None } ;
+    | $        { (*print_endline "Game_postfix 3 parsed"; *)None } ;
 
-    (* TODO: implement NAGs *)
     move_part: (* two halfmoves *)
-         moveN "." l:move r:move ("#"?)  { [l;r] }
+         moveN "." l:move                r:move ("#"?)  { [l;r] }
     | n1:moveN "." l:move n2:moveN "..." r:move ("#"?) => { n1=n2 } => { [l;r] }
     |    moveN "." l:move ("#"?)         { [l]   }
 )

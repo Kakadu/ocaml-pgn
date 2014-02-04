@@ -30,6 +30,7 @@ let wrap_parse f tostr line expected =
 
 let test_tagline = wrap_parse Parser.tag Parser.string_of_tagresult
 let test_move    = wrap_parse Parser.move (fun x -> x.Types.move)
+let test_nag     = wrap_parse Parser.nag  (fun x -> string_of_int x)
 
 let () = List.iter (fun (a,b) -> test_tagline a b)
   [ ("[White \"Kasparov\"]", (Some ("White","Kasparov")) )
@@ -44,6 +45,8 @@ let () = List.iter (fun (a,b) -> test_move a b)
   [ ("Nbd7", Some (Types.move_of_string "Nbd7"))
 
   ]
+
+let () = List.iter (fun (a,b) -> test_nag a b) [ ("$111", Some 111) ]
 
 (*
 let () = Pgn.parse_file "CapablancaYaffe.pgn"

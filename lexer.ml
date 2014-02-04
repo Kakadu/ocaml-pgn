@@ -6,6 +6,7 @@ let identRegexp = "[a-zA-Z]\\([a-zA-Z0-9]\\)*\\b"
 let tagNameRegexp = "\\([a-zA-Z0-9]\\)+\\b"
 let stringLiteralRegexp = "\\([0-9a-zA-Z\\?\\.\\ \\,]\\)*"
 let notBracesRegexp = "[^{}]*"
+let nagRegexp = "\\$\\([0-9][0-9]?[0-9]?\\)"
 
 class ['ans, 'arg] lexer s =
   let skip     = Skip.create [Skip.whitespaces " \n\t\r"] in
@@ -14,6 +15,7 @@ class ['ans, 'arg] lexer s =
   let literal  = regexp "[0-9]+" in
   let notBraces = regexp notBracesRegexp in
   let stringLiteral = regexp stringLiteralRegexp in
+  let nag = regexp nagRegexp in
 
   object (self)
     inherit Matcher.t s
@@ -25,6 +27,7 @@ class ['ans, 'arg] lexer s =
     method getSTRINGLITERAL = self#get "stringLiteral" stringLiteral
     method getHORIZ     = self#get "horizontal" (Str.regexp "(1-8)")
     method getCOMMENT   = self#get "comment"    notBraces
+    method getNAG       = self#get "nag"        nag
     method getSTRINGINQUOTES =
       let ans = self#get "stringInQuotes"  (Str.regexp "\"\\([0-9a-zA-Z\\?\'\\.\\, \\/\\|]\\)*\"") in
       ans
