@@ -10,10 +10,10 @@ let parse_file filename =
       printf "Result:\n";
       List.iter (fun g -> print_endline "game"; print_endline (string_of_pgn_file g)) ans
   | Failed r  ->
-      print_endline "Failed";
+      printf "File `%s` failed" filename;
       print_endline (Ostap.Reason.toString `All `Desc r)
 
-let parse_tag_line line = 
+let parse_tag_line line =
   let l = new Lexer.lexer line in
   match Parser.tag l with
   | Parsed (((key,v),_),_) ->
@@ -21,10 +21,10 @@ let parse_tag_line line =
   | Failed r ->
       printf "Failed! %s\n" (Ostap.Reason.toString `All `Desc r)
 
-let parse_move line = 
+let parse_move line =
   let l = new Lexer.lexer line in
   match Parser.move l with
-  | Parsed ((s,_),_) -> printf "Move parsed: %s = %s\n" line s
+  | Parsed ((m,_),_) -> printf "Move parsed: %s = %s\n" line m.move
   | Failed r -> printf "Failed! %s\n" (Ostap.Reason.toString `All `Desc r)
 
 
