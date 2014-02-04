@@ -1,0 +1,199 @@
+[Event "Cable m 9091"]
+[Site "USA"]
+[Date "1890.10.13"]
+[Round "1"]
+[White "Chigorin, Mikhail"]
+[Black "Steinitz, William"]
+[Result "1-0"]
+[ECO "C52"]
+[Annotator "Steinitz"]
+[PlyCount "75"]
+[EventDate "1890.10.13"]
+[Source "ChessBase"]
+[SourceDate "2012.11.22"]
+
+{Myers:  This is game #1 of a 2-game correspondence match played for a stake
+of $750.  The openings were pre-arranged by the players.  Chigorin's play was
+deeper and sounder, and Steinitz was rightfully defeated in convincing fashion.
+It is evident from the games that Chigorin invested the greater effort.} 1. e4
+{Myers Lipnitsky Avery Kasparov Edwards Russell Steinitz} 1... e5 2. Nf3 Nc6 3.
+Bc4 Bc5 4. b4 Bxb4 5. c3 Ba5 6. O-O Qf6 7. d4 7... Nh6 $6 $146 {Steinitz:  The
+move here adopted has never before been tried in actual play, but was a new
+suggestion which I made in my "Modern Chess Instructor".} (7... Nge7 8. Bg5 Qd6
+9. d5 (9. Qb3 O-O 10. Rd1 Bb6 11. dxe5 Qg6 12. Qa3 Re8 13. Nbd2 d6 14. exd6
+cxd6 15. Bf4 Bc5 16. Qc1 Bg4 17. Bg3 Rad8 18. h3 Bxf3 19. Nxf3 Qxg3 20. Kh1 Qg6
+21. Rd3 Qf6 22. Qd2 Ng6 23. Ng5 Nce5 24. Rf3 Nxf3 25. Bxf7+ Qxf7 26. gxf3 26...
+Qc4 {0-1 Chigorin,M-Steinitz,W/Havana CUB 1889/}) 9... Nd8 10. Qa4 Bb6 (10...
+b6 11. Na3 a6 12. Bd3 $1 12... Bxc3 13. Rab1 Bb7 14. Nc4 Qc5 15. Be3 b5 16.
+Bxc5 bxa4 17. Rfc1 d6 18. Bxd6 cxd6 19. Nxd6+ Kd7 20. Nxb7 Bd4 21. Nxd4 exd4
+22. Nxd8 Rhxd8 23. Rb7+ Kd6 24. e5+ Kxd5 25. Rxe7 Rac8 26. Rxc8 Rxc8 27. f3 Rc3
+28. Be4+ Kc4 29. Rxf7 Kb4 30. e6 d3 31. Rd7 {
+1-0 Chigorin,M-Steinitz,W/Havana CUB 1889/}) (10... f6 11. Bc1 Bb6 12. Na3 c6
+13. Bb3 Bc5 14. Rd1 b5 15. Qa5 Nb7 16. Qa6 Nd8 17. Qa5 Nb7 18. Qa6 Nd8 19. Qa5
+Nb7 20. Qa6 Qc7 21. dxc6 dxc6 22. Nxb5 cxb5 23. Qxb5+ Bd7 24. Bf7+ Kd8 25. Rb1
+Nd6 26. Qb3 Qb6 27. Qc2 Qc6 28. Bb3 a5 29. Be3 Bxe3 30. fxe3 a4 31. Bd5 Nxd5
+32. Rxd5 Re8 33. Rbd1 Re6 34. c4 Ra7 35. c5 Nc8 36. Nd2 Ke8 37. Nc4 Re7 38. Qe2
+a3 39. Qh5+ g6 40. Qh4 Ra4 41. Rd6 Nxd6 42. Nxd6+ Kd8 43. Qxf6 Ra5 44. Qf8+ Re8
+45. Nxe8 Qxc5 46. Qxc5 Rxc5 47. Nf6 Rc7 48. Kf1 Kc8 49. Rxd7 Rxd7 50. Nxd7 Kxd7
+51. Ke2 Kc6 52. Kd3 Kb5 53. Kc3 h5 54. Kb3 g5 55. Kxa3 Kc4 56. Kb2 Kd3 57. a4
+Ke2 58. a5 Kf2 59. a6 Kxg2 60. a7 Kxh2 61. a8=Q h4 62. Qg8 h3 63. Qxg5 Kh1 64.
+Qxe5 {1-0 Chigorin,M-Steinitz,W/Havana CUB 1889/}) 11. Na3 c6 (11... Qg6 12.
+Bxe7 Kxe7 13. Nxe5 Qf6 14. Nf3 Qxc3 15. e5 c6 16. d6+ Kf8 17. Bb3 h6 18. Qh4 g5
+19. Qh5 Qd3 20. Rad1 Qh7 21. Nc2 Kg7 22. Ncd4 Qg6 23. Qg4 h5 24. Nf5+ Kf8 25.
+Qxg5 Qxg5 26. Nxg5 h4 27. Kh1 Rh5 28. f4 Ne6 29. g4 hxg3 30. Nxg3 Rh6 31. Nxf7
+Kxf7 32. f5 Ke8 33. fxe6 dxe6 34. Ne4 {
+1-0 Chigorin,M-Steinitz,W/Havana CUB 1889/}) 12. Rad1 Qb8 13. Bxe7 Kxe7 14. d6+
+Kf8 15. Qb4 (15. Nxe5 f6 16. Nf3 Bc5 17. e5 b5 18. Bxb5 cxb5 19. Nxb5 Ne6 20.
+exf6 gxf6 21. Qh4 Kf7 22. Qh5+ Kg8 23. Qg4+ Kf7 24. Qh5+ Kg7 25. Nfd4 Bxd4 26.
+Nxd4 Rf8 27. Rd3 Bb7 28. Nxe6+ dxe6 29. Rh3 Be4 30. Qg4+ Bg6 31. Qxe6 Qb6 32.
+Qd5 Rad8 33. Rd1 Rfe8 34. c4 Rxd6 35. Qf3 Rd3 36. Qg4 36... Re4 {
+0-1 Chigorin,M-Steinitz,W/Havana CUB 1889/}) 15... f6 16. Bb3 g6 17. Nc4 Kg7
+18. a4 Nf7 19. Nxb6 axb6 20. Bxf7 Kxf7 21. Nxe5+ Kg7 22. Nc4 b5 23. axb5 Qa7
+24. b6 Qa4 25. Qc5 Re8 26. f3 Qa2 27. Ne3 Qb3 28. Rb1 Qf7 29. Nc4 Ra4 30. Rb4
+Ra2 31. Qd4 Kg8 32. Ne3 Ra3 33. Ra4 Rb3 34. Rfa1 Kg7 35. Ra8 Rb5 36. Rb8 c5 37.
+Qd5 Rxb6 38. Raa8 Qf8 39. Nc4 Rc6 40. f4 b5 41. Rxb5 Ba6 42. Rxe8 Qxe8 43. Rxc5
+Rxc5 44. Qxc5 Qxe4 45. Ne3 Qxf4 46. h3 Bb7 47. c4 Bc6 48. Qa3 Qd4 49. Kh2 f5
+50. c5 f4 51. Nc2 Qe5 52. Qa1 Qxa1 53. Nxa1 Kf6 54. Nc2 Ke5 55. Nb4 Bb7 56. Kg1
+Kd4 57. c6 Bc8 58. cxd7 Bxd7 59. Kf2 Ke5 60. Nd3+ Kxd6 61. Nxf4 Ke5 62. Ke3 Kf6
+63. Nd3 h6 64. Kf4 g5+ 65. Ke3 h5 66. Nc5 Bc6 67. g3 h4 68. g4 Bg2 69. Ne4+
+Bxe4 70. Kxe4 70... Ke6 { -  Chigorin,M-Steinitz,W/Havana CUB 1889/}) (7... h6
+8. Qb3 $1 (8. dxe5 Nxe5 9. Nxe5 Qxe5 10. Qb3 Qh5 11. Ba3 c6 12. Nd2 Bd8 13. e5
+Ne7 14. f4 O-O 15. Ne4 b5 16. Bd3 Qg4 17. f5 Nd5 18. Rf3 Re8 19. Bd6 Nf4 20.
+Rg3 Ne2+ 21. Bxe2 Qxe4 22. Bd3 Qa4 23. f6 Qxb3 24. Rxg7+ Kh8 25. axb3 Bb6+ 26.
+Kh1 Bb7 27. Rxf7 c5 28. Rh7+ Kg8 29. f7# {
+1-0 Richmond,P-Noakes,M/England ENG 1999/}) (8. Bb5 Nge7 9. Ba3 exd4 10. e5 Qe6
+11. cxd4 Bb4 12. Bb2 d5 13. Nc3 O-O 14. Ne2 Ng6 15. Qb3 Ba5 16. Ne1 Nce7 17. f4
+Qb6 18. Ba3 f5 19. Qa4 c6 20. Bd3 Qd8 21. Qc2 b5 22. Kh1 Bb6 23. g4 a5 24. Rg1
+b4 25. gxf5 Bxf5 26. Bxf5 Rxf5 27. Rxg6 bxa3 28. Rxc6 Nxc6 29. Qxf5 Nxd4 30.
+Nxd4 Bxd4 31. Qe6+ Kh8 32. Rd1 Bc3 33. Rxd5 33... Qb8 {
+-  Gunsberg,I-Steinitz,W/New York USA 1891/}) 8... Nge7 (8... exd4 9. cxd4 Bb6
+10. e5 Qg6 11. Bd3 Qh5 12. Bb2 Nge7 13. d5 Na5 14. Qa4 Nxd5 15. Nbd2 Nc6 16.
+Rfe1 Ndb4 17. Bb1 d5 18. exd6+ Be6 19. Re5 g5 20. Rxe6+ fxe6 21. Bxh8 O-O-O 22.
+d7+ Rxd7 23. a3 Rxd2 24. Nxd2 Qe2 25. Be4 Qxf2+ 26. Kh1 Nd5 27. Bxd5 exd5 28.
+Qg4+ {1-0 Lee,G-Chandler,C/Great Britian GBR 1994/}) 9. Nxe5 O-O 10. f4 Bb6 11.
+Qd1 d6 12. Nf3 Bg4 13. Be3 Rae8 14. Nbd2 d5 15. e5 Qe6 16. Be2 Nf5 17. Bf2 f6
+18. Ng5 fxg5 19. Bxg4 gxf4 20. Qf3 Nce7 21. a4 c6 22. a5 Bd8 23. Rfb1 b6 24.
+Qxf4 Ng6 25. Qf3 Bg5 26. Qd1 Nf4 27. axb6 Nd3 28. Nf3 Nxf2 29. Kxf2 Be3+ 30.
+Ke2 Qg6 31. Bxf5 Rxf5 32. Kxe3 Qxg2 33. bxa7 Ref8 34. Nd2 Qg5+ 35. Kd3 Qg6 36.
+Kc2 Rf1+ 37. Kc1 Rxd1+ 38. Kxd1 Qg4+ 39. Kc1 Qg1+ 40. Kb2 Qg2 41. Kc2 Qg6+ 42.
+Kb3 Ra8 43. Ra4 Kh7 44. Rba1 Qe8 45. Ra5 g5 46. Kb2 h5 47. Nb3 g4 48. Nc5 h4
+49. Ra6 Kh6 50. Rb6 Kg5 51. Rb7 Kf4 52. e6 g3 53. hxg3+ hxg3 54. Rf7+ Ke3 55.
+Kc2 {1-0 Bergez,L-Lebrun,X/Issy Les Moulineaux Syre FRA 1996/}) (7... Bb6 8.
+Ba3 (8. dxe5 Nxe5 9. Nxe5 Qxe5 10. Kh1 d6 11. f4 Qe7 12. e5 Be6 13. exd6 Qxd6
+14. Bb5+ Kf8 15. Ba3 Bc5 16. Bxc5 Qxc5 17. Ba4 Nf6 18. Bc2 Ng4 19. Qe1 Bc4 20.
+Rf3 Re8 21. Qd2 21... Be2 {0-1 Sieber,W-Karl,H/Samnaun SUI 2004/}) 8... d6 9.
+dxe5 Nxe5 10. Nxe5 Qxe5 11. Kh1 Be6 12. f4 Qxe4 13. Nd2 Qc6 14. Qe2 O-O-O 15.
+Bxe6+ fxe6 16. Qxe6+ Qd7 17. Rae1 Nf6 18. Qxd7+ Kxd7 19. Nc4 Nd5 20. Nxb6+ Nxb6
+21. g4 Rde8 22. Bc1 Rxe1 23. Rxe1 Re8 24. Rf1 Re2 25. f5 Ke7 26. Bg5+ Kf7 27.
+Bd8 Nd5 28. Rb1 b6 29. c4 Ne3 30. Bxc7 Nxg4 31. Bxd6 Ne3 32. c5 32... Nxf5 {
+-  Rutkauskas,G-Nemes,G/Zakopane IBCA POL 2000/}) 8. Bg5 (8. d5 Ne7 9. Qa4 Bb6
+10. Na3 Ng4 11. h3 h5 12. Rb1 a6 13. Rxb6 cxb6 14. Rd1 Rb8 15. Qb4 Qg6 16. Bb3
+b5 17. c4 d6 18. cxb5 a5 19. Qxa5 b6 20. Qc3 Nf6 21. Ng5 Nxe4 22. Nxe4 Qxe4 23.
+Bg5 f6 24. Bc2 Qe2 25. Bc1 Bd7 26. Re1 Nxd5 27. Rxe2 Nxc3 28. Rd2 Rc8 29. Bb2
+Nxb5 30. Bg6+ Ke7 31. Nc2 Be8 32. Bd3 g6 33. Ne3 Nd4 34. Nd5+ Ke6 35. Nxb6 Rb8
+36. Bc4+ Kf5 37. Nd5 { -  Timman,J-Kurajica,B/Wijk aan Zee NED 1977/}) (8. Bd5
+Ne7 9. Bg5 Qa6 10. Bxe7 Kxe7 11. Nxe5 d6 12. Bc4 b5 13. Bb3 c6 14. Nxc6+ Kd7
+15. Bd5 Bb7 16. Nxa5 Bxd5 17. exd5 Qxa5 18. Qd3 Rac8 19. Rc1 f5 20. Nd2 Rc7 21.
+Nb3 Qb6 22. Re1 Kc8 23. Nd2 Qb7 24. Reb1 Qxd5 25. Rxb5 Qc6 26. c4 Kd7 27. d5
+Qa8 28. Rab1 g6 29. Qe3 Nf7 30. Qe6+ Kd8 31. Rb8+ Rc8 32. Rxa8 Rxa8 33. Rb7 {
+1-0 Saunders,I-McWilliam,R/corr GBR 1907/}) 8... Qd6 (8... Qg6 $5 9. d5 Nb8 10.
+Bxh6 (10. Na3 $5 10... O-O 11. Be7 d6 12. Bxf8 Kxf8 13. Bd3 Bh3 14. Nh4 Qg5 15.
+Nc4 Bb6 16. Qf3 $14) 10... Qxh6 11. Nxe5 O-O 12. d6 Nc6 13. Ng4 {
+Vasyukov/Nikitin} 13... Qxd6 $1 14. Qxd6 cxd6 15. Ne3 b5 16. Bxb5 Rb8 17. a4
+Re8 18. Rc1 Rxe4 19. Nd2 19... Re6 $36 {Myers}) 9. d5 $1 (9. Bxh6 gxh6 10. dxe5
+Nxe5 11. Qxd6 Nxf3+ 12. gxf3 cxd6 13. Rc1 Rg8+ 14. Kf1 Rb8 15. Na3 a6 16. Rab1
+b5 17. Bd5 Bb6 18. Nc2 a5 19. Ne1 Ba6 20. Ng2 b4+ 21. c4 Bd4 22. Rd1 Bc3 23. f4
+Rg6 24. Ne3 Kf8 25. Ke2 Bf6 26. Rd3 Rc8 27. a3 Bc3 28. f5 Rg5 29. Rxc3 bxc3 30.
+Rb6 Bxc4+ 31. Nxc4 Rg2 32. Kd3 Rxf2 33. Kxc3 Ke7 34. Kd4 Rxc4+ 35. Kxc4 Rxh2
+36. Kb5 Rd2 37. Kxa5 h5 38. a4 h4 39. Rb3 Kf6 40. Kb6 {
+1-0 Chigorin,M-Markov,A/corr RUS 1890/}) 9... Nd8 $5 (9... Ne7 $5 10. Qa4 Bb6
+11. Na3 Ng4 (11... c6 12. Rad1 Qb8 13. Bxe7 Kxe7 14. d6+ 14... Kf8 $132 {
+Steinitz}) 12. h3 Nxf2 13. Rxf2 Bxf2+ 14. Kxf2 Qb6+ 15. Be3 Qb2+ 16. Nc2 a6 17.
+Bb3 Qxc3 18. Rc1 f5 19. Nce1 Qb2+ 20. Rc2 Qb1 21. Qa3 a5 22. Bg5 Ng8 23. Nd2
+Qa1 24. Nef3 b5 25. Rxc7 b4 26. Qxa5 Rxa5 27. Rxc8+ Kf7 28. d6+ Rd5 29. Bxd5+
+Kg6 30. exf5+ Kxf5 31. Rf8+ Nf6 32. g4+ Kg6 33. Bf7# {
+1-0 Chigorin,M-Markov,A/corr RUS 1890/}) 10. Qa4 (10. Qd3 $5) 10... Bb6 {
+Lipnitsky:  Given that the two players held opposing views on this line of the
+Evans Gambit, the game is a special kind of creative duel.  Black has an extra
+pawn.  It is hard for White to open up lines for an attack on the black king,
+which is fairly securely placed.  It is easy to see that White has no sharp
+attack in the gambit style.  But something else is obvious:  White has a
+lasting initiative on every part of the board.  Chigorin demonstrates that
+this more than compensates for the sacrificed pawn.} 11. Na3 11... c6 $2 (11...
+Qg6 $1 $132 $142 {Steinitz}) (11... O-O $5 $142 {Myers} 12. Bd3 Qg6 13. Nc4 {
+Kasparov} 13... f6 14. Nxb6 cxb6 15. Bxh6 Qxh6 16. d6 $14 {Myers}) 12. Be2 {
+Steinitz:  In general, I may remark that my antagonist's attack is of the same
+description as in most of the games which we have played together, and it is
+representative of the old school.  He believes in advancing the pawns, and
+sacrificing one or more of them in order to create difficulties on the K-side,
+or for the purpose of blocking his opponent's pieces; whereas I maintain that
+the King is a strong piece that can usually take care of itself, and that in
+his style of attack Chigorin has to employ powerful pieces in order to block
+inferior ones.  In the end, I opine that as usual, my minor pieces will
+thoroughly develop, while his far advanced pawns, which cannot retrace their
+steps, will form weak marks for my own ultimate counter-attack.} 12... Bc7 $6 (
+12... Ng4 $5 13. Nc4 Bxf2+ 14. Rxf2 Qc5 15. Bh4 b5 16. Qa3 Qxa3 17. Nxa3 Nxf2
+18. Bxf2 f6 19. Rd1 a5 20. Nh4 Nf7 21. Nf5 g6 22. Ng3 22... h5 $132 {Myers})
+13. Nc4 Qf8 (13... Qg6 14. Bxd8 Kxd8 (14... Bxd8 15. Nfxe5 Qf6 16. Qa3 Be7 17.
+d6 $16 {Kasparov}) 15. Ncxe5 Qf6 16. Nd3 cxd5 17. e5 Qc6 18. Qh4+ $18 {Myers})
+14. d6 $1 {Myers:  Steinitz is still not willing to admit that he is in
+trouble.  He wrote, "In a match over the board, I would undertake to play the
+identical variation up to this point against any living player, at least four
+times, and if either Chigorin or Gunsberg were to offer me a draw at that
+stage, I would refuse."} (14. Qd1 $5 14... cxd5 15. exd5 Nf5 16. Nfxe5 Qc5 17.
+Bg4 d6 18. Ne3 dxe5 19. Nxf5 Bxf5 20. Bxf5 O-O 21. Qg4 $18 {Myers}) 14... Bxd6
+$8 15. Nb6 (15. Bxd8 $5 15... Kxd8 $8 16. Nb6 Rb8 17. Qxa7 Bc7 18. Rfd1 $1 (18.
+Rab1 18... Ke7 $5 $132 {Steinitz}) 18... Ke7 (18... Ng4 $2 19. Rab1 Qc5 20.
+Nxc8 Qxf2+ 21. Qxf2 Nxf2 22. Kxf2 $18) 19. Rd2 d6 20. Na8 Rxa8 (20... Qd8 21.
+Nxe5 $18) 21. Qxa8 f5 22. exf5 Qxf5 23. Bd3 e4 24. Bxe4 Qa5 25. Qxa5 Bxa5 26.
+Re2 $18 {Myers}) 15... Rb8 16. Qxa7 Ne6 (16... Ng4 $2 17. Nh4 Ne6 18. Bxg4 Nxg5
+19. Nf5 Ne6 20. Rfd1 Bc7 21. Na8 Rxa8 22. Qxa8 Kd8 23. Rxd7+ Kxd7 24. Rd1+ {
+1-0 Gunsberg,I-Steinitz,W/New York USA 1891/}) (16... Ng8 $2 17. Bxd8 Kxd8 18.
+Bc4 Bc7 19. Rfd1 Qe7 20. Na8 d6 21. Nxc7 Kxc7 22. Rab1 f5 23. exf5 Bxf5 24. Rb6
+$18 {Myers}) 17. Bc1 $1 {Myers:  Steinitz could be generous with his praise: 
+"This move, like White's 12th and 14th moves, bears the stamp of genius."}
+17... Ng8 {Steinitz:  I consider that now, that is, after Black's 17th move,
+my position is better than it was at the start of the game, and I am ready to
+lay odds of two to one that my opponent will not win.  In other words, I
+undertake to draw at least.} (17... Qe7 18. Ba3 18... Nf4 $2 (18... c5 $5) 19.
+Bc4 $1 (19. Rfe1 {Steinitz} 19... Qe6 20. Ng5 $18) 19... Qf6 20. Rfd1 Bc7 21.
+Na8 $18 {Myers}) 18. Ba3 $1 18... c5 {Myers:  Black's position is totally
+busted, but Steinitz in his commentary, which was published as the game
+progressed, speaks as if the position is difficult for Black but unclear, with
+a hard-fought draw as a distinct possibility.} 19. Rad1 $1 (19. Rfd1 $5 19...
+Nf6 {Steinitz} 20. Ng5 $1 20... Nxg5 21. Nc4 Bc7 22. Bxc5 Qg8 (22... d6 23.
+Nxd6+ Bxd6 24. Bxd6 Qxd6 25. Rxd6 $18) 23. Bd6 Nfxe4 24. Bxc7 Nxc3 25. Qxb8
+Nxe2+ 26. Kf1 Ke7 27. Bd6+ Ke6 28. Bxe5 $18 {Myers}) 19... Nf6 (19... Bc7 20.
+Bb5 $1 20... Nf6 21. Nd5 Bd6 22. Nh4 (22. Nxf6+ gxf6 23. Nh4 $18 {Steinitz})
+22... Nxd5 23. Rxd5 Bc7 24. Nf5 g6 25. Rfd1 gxf5 26. Rxd7 Bxd7 27. Rxd7 Qh6 28.
+Bxc5 Nxc5 29. Qxc5 $18 {Chigorin}) 20. Bc4 (20. Ng5 $5) (20. Bb5 Qe7 21. Nd5
+Nxd5 22. exd5 22... Ng5 {Myers:  Steinitz here expresses optimism for Black's
+positon, although White has a concrete winning variation at his disposal.} 23.
+Nxg5 $3 23... Qxg5 24. f4 $3 24... Qh5 25. Qb6 $1 25... Qh6 26. Bxc5 Bxc5+ 27.
+Qxc5 b6 28. Qc7 Ra8 29. Qxe5+ Kd8 30. d6 Re8 31. Qd5 $18 {Myers}) 20... Bc7 (
+20... Nxe4 21. Nxc8 Rxc8 22. Qxb7 Rc6 23. Nxe5 $18 {Kasparov}) (20... Qe7 21.
+Bxe6 fxe6 22. Nc4 Bc7 23. Bxc5 $18 {Kasparov}) 21. Nd5 (21. Rfe1 $1 $142 21...
+Nd8 22. Na8 Bd6 23. Qxc5 $1 23... Ne6 (23... Bxc5 24. Nc7+ Ke7 25. Bxc5+ d6 26.
+Bxd6+ Kd7 27. Nxe5#) 24. Qa7 Bxa3 25. Qxb8 Qc5 26. Bxe6 fxe6 27. Qxe5 d6 28.
+Qxc5 Bxc5 29. e5 $1 $18 {Myers}) (21. Nxc8 $1 $142 21... Rxc8 22. Qxb7 Kd8 23.
+Bxe6 fxe6 24. Ng5 $18 {Edwards}) 21... Bd6 22. Nh4 Nxd5 (22... b5 23. Nf5 Rb7
+24. Nxf6+ gxf6 25. Qa6 Bb8 26. Bxb5 $18 {Myers}) 23. Nf5 g6 24. Nxd6+ $1 24...
+Qxd6 25. Bxd5 (25. exd5 $1 25... Nf4 (25... Ng5 26. Bxc5 Ra8 27. Bxd6 Rxa7 28.
+Bxe5 O-O 29. Bd4 $18 {Myers}) 26. Bxc5 Qc7 27. Rfe1 d6 28. Bb5+ Ke7 29. Rxe5+
+$18 {Edwards}) 25... Qc7 26. Bxe6 fxe6 27. Bxc5 Ra8 28. Qxa8 Qxc5 29. Qa4 (29.
+Qb8 $1 29... Rf8 30. Qd6 b6 31. a4 Rf4 32. Rd5 $1 $18 {Myers}) 29... Kd8 30.
+Rd2 30... Kc7 {Myers:  This move does not lessen Steinitz's difficulties, but
+he does not comment.  For Black, the picture is increasingly hopeless.} 31. Rb1
+$1 31... Rd8 (31... d6 32. Rb4 $1 {Kasparov} 32... Kb8 33. c4 h5 34. Rb5 Qc6
+35. Qb4 Rd8 36. Rxe5 $18 {Myers}) 32. Rb5 $1 32... Qc6 33. Qb4 d6 34. a4 $1
+34... Qe8 (34... Bd7 35. Rxd6 $1 {Kasparov} 35... Qxd6 36. Rxb7+ Kc8 37. Qxd6
+$18) 35. Rb6 Qf8 36. Qa5 $1 36... d5 (36... Kb8 37. Rdb2 $1 37... Rd7 38. Ra6
+b6 39. Ra8+ Kb7 40. Qxb6+ Kxa8 41. Qb8# {Myers}) 37. exd5 Kb8 38. d6 {
+Steinitz resigned in April of 1891, with a full range of excuses offered up to
+his readers of the "International Chess Magazine".  "The telegraph battle,"
+wrote Kasparov, "provoked an unprecedented surge in the popularity of chess in
+many countries."  And Lasker recalled many years later:  "The games of the
+telegraph match made a startling impression on me.  To crush Steinitz in such
+a way--this seemedincredible!"} 1-0
+
+
