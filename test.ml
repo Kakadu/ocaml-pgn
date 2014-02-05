@@ -49,10 +49,13 @@ let () = List.iter (test_tagline)
   ; ("[Date \"1910.??.??\"]",             (Some ("Date",  "1910.??.??")) )
   ]
 
-let () = List.iter test_move
-  [ ("Nbd7",  Some (Types.move_of_string "Nbd7"))
-  ; ("e4",    Some (Types.move_of_string "e4"))
-  ; ("Rhxd8", Some (Types.move_of_string "Rhxd8"))
+let () =
+  let make s = (s, Some (Types.move_of_string s)) in
+  List.iter test_move
+  [ make "Nbd7"
+  ; make "e4"
+  ; make "Nf3"
+  ; make "Rhxd8"
   ]
 
 let () = List.iter test_nag [ ("$111", Some 111) ]

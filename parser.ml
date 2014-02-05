@@ -36,19 +36,23 @@ ostap (
   hor:  x:("1"|"2"|"3"|"4"|"5"|"6"|"7"|"8")  { repr x };
   move_postfix: "#" { () } | "+" {()} | -"=" figure {()} | "++" { () };
   move_itself:
-      x:"0-0" move_postfix? { repr x }
-    | x:"O-O" move_postfix? { repr x }
-    | x:"0-0-0" move_postfix? { repr x }
+      x:"0-0-0" move_postfix? { repr x }
     | x:"O-O-O" move_postfix? { repr x }
-    | pawn:vert "x" v:vert h:hor p:move_postfix? { (* pawn takes *)
-        sprintf "%sx%s%s" pawn v h
-      }
-    | f:figure v1:vert v2:vert h:hor p:move_postfix? { (* Nbd7+ *)
-        sprintf "%s%s%s%s" f v1 v2 h
+    | x:"0-0" move_postfix? { repr x }
+    | x:"O-O" move_postfix? { repr x }
+    | f:figure v1:(vert) takes:("x"?) v2:vert h:hor p:move_postfix? { (* Nbxd7+ *)
+        sprintf "%s%s%s%s%s" f v1
+	  (match takes with Some x -> repr x | None -> "") v2 h
     }
-    | f:(figure?) takes:("x"?) v:vert h:hor p:move_postfix? {
-        sprintf "%s%s%s%s" (Option.get ~default:"" f)
-          (match takes with Some x -> repr x | None -> "") v h
+    | f:figure takes:("x"?) v2:vert h:hor p:move_postfix? { (* Nxe4+, Nf3# *)
+        sprintf "%s%s%s%s" f
+	  (match takes with Some x -> repr x | None -> "") v2 h
+    }
+    | pawn:vert "x" v:vert h:hor p:move_postfix? { (* cxd5+ *)
+        sprintf "%sx%s%s" pawn v h
+    }
+    | pawn:vert h:hor p:move_postfix? { (* pawn moves *)
+        sprintf "%s%s" pawn h
     };
   comment : "{" c:COMMENT "}" { repr c };
   move:
@@ -118,6 +122,9 @@ ostap (
         let b = { { bmove with next = next } with variants=(fix_variants bvars) } in
         `Continue { wmove with next=`Continue b }
       }
+    | moveN "." wmove:move  {
+      `Continue { wmove with next = `Result NoResult }
+    }
     | r:result                                       { `Result  r }
     | $ { `Result NoResult }
 )
