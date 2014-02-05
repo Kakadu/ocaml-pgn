@@ -5,10 +5,11 @@ open Ostap.Combinators
 let parse_file filename =
   let l = new Lexer.lexer (Ostap.Util.read filename) in
   match Parser.file l with
-  | Parsed((ans,_),_) ->
+  | Parsed((ans,_),msg) ->
       print_endline "Parsed";
       printf "Result:\n";
-      List.iter (fun g -> print_endline "game"; print_endline (string_of_pgn_file g)) ans
+      List.iter (fun g -> print_endline "game"; print_endline (string_of_pgn_file g)) ans;
+      printf "message: %s" (Ostap.Reason.toString `All `Desc msg)
   | Failed r  ->
       printf "File `%s` failed" filename;
       print_endline (Ostap.Reason.toString `All `Desc r)

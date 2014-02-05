@@ -2,9 +2,6 @@ open Printf
 open Ostap
 open Types
 
-module Option = struct
-  let get ~default = function Some x -> x | None -> default
-end
 
 let repr = Matcher.Token.repr
 let make_reason msg l = new Reason.t (Msg.make msg [||] (Matcher.Token.loc l))
@@ -55,27 +52,38 @@ ostap (
     };
   comment : "{" c:COMMENT "}" { repr c };
   move:
-    pre_ann:(comment?)  m:move_itself all_nags:( nag* ) post_ann:(comment?)  {
+    pre_ann:(comment?)  move:move_itself nags:( nag* ) post_ann:(comment?)  {
       (*printf "move %s is parsed. nags length = %d\n%!" m (List.length all_nags); *)
-      { move=m
-      ; nags = all_nags
-      ; pre_ann = Option.get ~default:"" pre_ann
-      ; post_ann = Option.get ~default:"" post_ann
-      ; aux =  []
+      { move = move
+      ; nags = nags
+      ; pre_ann = pre_ann
+      ; post_ann = post_ann
       ; variants = []
+      ; next = Obj.magic 1
       }
     }
-
 )
 
+ostap (
+  result:
+    "1-0" { WhiteWon }
+  | "0-1" { BlackWon }
+  | "1/2-1/2" { Draw }
+  | "*"   { NoResult }
+)
 
-let (_: (_, game_tree,_) Ostap.Combinators.parse) = move
+(*
+let (_: (_, Types.tree, _) Ostap.Combinators.parse) = move_tree
+*)
+
+let fix_variants =
+  let f = function `Continue x -> x | `Result _ -> failwith "Result can't be in variation without move " in
+  List.map f
 
 ostap (
     result_in_quotes: x:("\"1-0\"" | "\"0-1\"" | "\"1/2-1/2\"" | "\"S-S\"") {
       x |> repr |> remove_quotes
     };
-    result: x:("1-0" | "0-1" | "S-S") { x |> repr };
 
     moveN: x:LITERAL { x |> repr |> int_of_string };
 
@@ -86,29 +94,50 @@ ostap (
     | "*"      { None }
     | $        { (*print_endline "Game_postfix 3 parsed"; *)None } ;
 
-    move_part: (* two halfmoves *)
-         moveN "." l:move                r:move ("#"?)  { [l;r] }
-    | n1:moveN "." l:move n2:moveN "..." r:move ("#"?) => { n1=n2 } => { [l;r] }
-    |    moveN "." l:move ("#"?)         { [l]   }
+    variation:
+      -"(" move_tree -")" ;
+
+    move_tree:
+      moveN   "." wmove:move wvars:(variation* )
+      moveN "..." bmove:move bvars:(variation* )   next:move_tree {
+        let f = function `Continue x -> x | `Result _ -> failwith "Result can't be in variation without move " in
+        let wvars = List.map f wvars in
+        let bvars = List.map f bvars in
+        let node2 = { { bmove with variants=bvars } with next = next } in
+        `Continue { { wmove with variants=wvars } with next = `Continue node2 }
+      }
+    | moveN "." wmove:move r:result  {
+      `Continue { wmove with next = `Result r }
+    }
+    | moveN "..." bmove:move bvars:(variation* ) tl:move_tree {
+        let f = function `Continue x -> x | `Result _ -> failwith "Result can't be in variation without move " in
+        let bvars = List.map f bvars in
+        `Continue { { bmove with next =  tl } with variants=bvars }
+      }
+    | moveN "." wmove:move bmove:move bvars:(variation* ) next:move_tree {
+        let b = { { bmove with next = next } with variants=(fix_variants bvars) } in
+        `Continue { wmove with next=`Continue b }
+      }
+    | r:result                                       { `Result  r }
+    | $ { `Result NoResult }
 )
 
-let (_: (_,game_tree list, _) Combinators.parse) = move_part
+let (_: (_, string * string, _) Combinators.parse) = tag
 
-ostap (
+ostap ((*
     moves: xs:(move_part+) {
 	List.flatten  xs
-    };
-    game: tags:(tag)+ initial_comment:comment moves:moves xx:game_postfix {
-      printf  "Initial comment: %s\n%!" initial_comment;
-      let (_:string option) = xx in
-      (tags, moves, xx)
+      }; *)
+    game: tags:(tag)+ initial_comment:comment? moves:move_tree {
+      Option.iter initial_comment ~f:(printf  "Initial comment: %s\n%!");
+      match moves with
+      | `Continue x -> (tags, x)
+      | `Result _   -> failwith "Something is wrong"
     }
 )
 
-let file =
-  let ostap (
-    file: game+
-  ) in
-  file
+ostap (
+  file: game+
+)
 
 
