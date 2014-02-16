@@ -1,5 +1,6 @@
 open Printf
 open Ostap.Combinators
+open Types
 
 type options_t = { mutable verbose: bool }
 let options = { verbose = false }
@@ -60,7 +61,24 @@ let () =
 
 let () = List.iter test_nag [ ("$111", Some 111) ]
 
+(* testing my StdLib *)
+let () =
+  let error a b msg = printf "Trim failed: \"%s\", \"%s\": %s\n%!" a b msg in
+  let trim_test (a,b) =
+    let p  = String.trim a in
+    if p <> b then error a b (sprintf  "results not equal (got `%s`)" p)
+    else report_ok ()
+  in
+  List.iter trim_test
+    [ "abcd", "abcd"
+    ; " qwe ", "qwe"
+    ; "Myers", "Myers"
+    ; " x y z ", "x y z"
+    ]
+
+
 (*
+let _ = exit 0
 let () = Pgn.parse_file "CapablancaYaffe.pgn"
 
 let () = Pgn.parse_file "test1.pgn"
@@ -68,6 +86,7 @@ let () = Pgn.parse_file "test1.pgn"
 let () = Pgn.parse_file "game.pgn"
 
 let () = Pgn.parse_file "game2.pgn"
+
 *)
 let () = Pgn.parse_file "ChigorinSteinitz.pgn"
 
