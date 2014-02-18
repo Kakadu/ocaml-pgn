@@ -1,8 +1,11 @@
 open Printf
 
+type 'a result = [ `Ok of 'a | `Error of string ]
+
 module Option = struct
   let get ~default = function Some x -> x | None -> default
   let iter ~f = function Some x -> f x | None -> ()
+  let (>>=) x f = match x with None -> None | Some x -> f x
 end
 
 module String = struct
@@ -73,7 +76,6 @@ let move_of_string move = { move; pre_ann=None; post_ann=None; variants=[]; next
 let move_tree_to_string root =
   let b = Buffer.create 20 in
   let add_string = Buffer.add_string b in
-  let bprintf fmt = add_string (sprintf fmt) in
   let ann = function
     | None   -> ()
     | Some x -> (add_string "{ "; add_string x; add_string " }")
@@ -102,17 +104,64 @@ let move_tree_to_string root =
 let string_of_pgn_file : game -> string = fun (tags, tree) ->
   let tags = List.map (fun (a,b) -> sprintf "[%s\t\"%s\"]\n" a b) tags |> String.concat "" in
   let s2 = move_tree_to_string tree in
-  sprintf "%s\n%s" tags s2 (*
-  let moves_str =
-    let string_of_move {pre_ann; post_ann; move; nags; _ } =
-      let pre_str = if pre_ann="" then "" else sprintf "{ %s }" pre_ann in
-      let post_str = if post_ann="" then "" else sprintf "{ %s }" post_ann in
-      ([pre_str; move] @ (List.map (sprintf "$%d") nags) @ [post_str] )
-		 |> String.concat " "
+  sprintf "%s\n%s" tags s2
+
+module Board = struct
+  type color = White | Black
+  type figure = King | Queen | Bishop | Knight | Rook | Pawn
+  type t = (color * figure) option array array
+
+  let figure_to_char = function
+    | King   -> 'K' | Queen  -> 'Q' | Rook -> 'R'
+    | Bishop -> 'B' | Knight -> 'N' | Pawn -> 'P'
+
+  let square_to_char = function
+    | None -> ' '
+    | Some (color,f) ->
+      let c = figure_to_char f in
+      (match color with White -> c | Black -> Char.lowercase c)
+
+  let to_string (board: t) =
+    let b = Buffer.create 100 in
+    for i = 0 to 7 do
+      for j=0 to 7 do
+	Buffer.add_char b (square_to_char board.(j).(i))
+      done
+    done;
+    Buffer.contents b
+
+  let create () =
+    let b = Array.init 8 (fun _ -> Array.init 8 (fun _ -> None)) in
+    for j=0 to 7 do
+      b.(j).(1) <- Some (White,Pawn);
+      b.(j).(6) <- Some (Black,Pawn)
+    done;
+    b.(0).(0) <- Some (White,Rook);
+    (* TODO: generate new board *)
+    b
+
+  let make_move move_str board =
+    let b = Array.init 8 (fun _ -> Array.init 8 (fun _ -> None)) in
+    for i=0 to 7 do
+      for j=0 to 7 do
+	b.(i).(j) <- board.(i).(j);
+      done
+    done;
+    printf "Making move `%s` without changing board\n" move_str;
+    Some b
+end
+
+let validate_game root =
+
+  let (>>=) = Option.(>>=) in
+  let rec helper (board: Board.t option) root =
+    let init: Board.t option  = board >>= Board.make_move root.move in
+    let f : Board.t option -> _ -> Board.t option =
+      fun acc -> function
+      | `Continue x -> (helper acc x)   (* TODO *)
+      | `NullMoves _ -> acc
     in
-    moves |> List.map string_of_move |> String.concat " "
+    List.fold_left f init root.variants
   in
-  let s3 = match postfix with Some s -> s | None -> "" in
-  tags ^ moves_str ^ s3
-                     *)
+  helper (Some (Board.create ())) root
 

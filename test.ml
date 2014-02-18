@@ -76,17 +76,17 @@ let () =
     ; " x y z ", "x y z"
     ]
 
+let () = Pgn.parse_file "game.pgn"
 
 (*
-let _ = exit 0
 let () = Pgn.parse_file "CapablancaYaffe.pgn"
 
-let () = Pgn.parse_file "test1.pgn"
+let _ = exit 0
 
-let () = Pgn.parse_file "game.pgn"
 
 let () = Pgn.parse_file "game2.pgn"
 
 *)
+(*
 let () = Pgn.parse_file "ChigorinSteinitz.pgn"
-
+*)
