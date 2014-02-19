@@ -189,8 +189,13 @@ module Board = struct
       b.(j).(1) <- Some (White,Pawn);
       b.(j).(6) <- Some (Black,Pawn)
     done;
-    b.(0).(0) <- Some (White,Rook);
-    (* TODO: generate new board *)
+    List.iter (fun (color, horiz) ->
+        List.iter (fun v -> set_cell_value b (v,horiz) (Some (color,Rook)) )   [ VA; VH ];
+        List.iter (fun v -> set_cell_value b (v,horiz) (Some (color,Knight)) ) [ VB; VG ];
+        List.iter (fun v -> set_cell_value b (v,horiz) (Some (color,Bishop)) ) [ VC; VF ];
+        set_cell_value b (VD,horiz) (Some (color,Queen));
+        set_cell_value b (VE,horiz) (Some (color,King))
+      ) [ (White,H1); (Black, H8) ];
     b
 
   let is_vert c = Char.(code c >= code 'a' && code c <= code 'h')
@@ -224,7 +229,7 @@ module Board = struct
   let make_move: string -> (color * t) -> (color * t) option = fun move_str (side_color, board) ->
     let b = copy board in
     printf "make_move '%s': board is:\n%s\n" move_str (to_string b);
-    printf "sexp board %s\n%!" (Sexplib.Sexp.to_string_hum @@ sexp_of_t b);
+    (*printf "sexp board %s\n%!" (Sexplib.Sexp.to_string_hum @@ sexp_of_t b);*)
     let is_pawn_move = (String.length move_str=2) && is_vert move_str.[0] && is_horiz move_str.[1] in
     let is_figure_move () =
       let takes = String.index move_str 'x' <> None in
