@@ -1,4 +1,4 @@
-PKG ostap
+PKG ostap sexplib
 S .
 B _build
 FLG -rectypes

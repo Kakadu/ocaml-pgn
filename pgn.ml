@@ -10,7 +10,11 @@ let parse_file filename =
       printf "Result:\n";
       List.iter (fun g ->
 	print_endline "game";
-	let _ = Types.validate_game (snd g) in
+	let () =
+        match Types.validate_game (snd g) with
+        | Some b -> printf "validated!\n%!"
+        | None   -> printf "validation error!\n%!"
+        in
 	print_endline (string_of_pgn_file g)
       ) ans;
       printf "message: %s" (Ostap.Reason.toString `All `Desc msg)
