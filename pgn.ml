@@ -9,9 +9,8 @@ let parse_file filename =
       print_endline "Parsed";
       printf "Result:\n";
       List.iter (fun g ->
-	print_endline "game";
-	let () =
-        match Types.validate_game (snd g) with
+	print_endline "Validating game...";
+	let () = match Types.validate_game (snd g) with
         | Some b -> printf "validated!\n%!"
         | None   -> printf "validation error!\n%!"
         in

@@ -17,7 +17,8 @@ let report_error ~msg line =
 let report_ok () =
   if options.verbose then printf "OK!\n" else ()
 
-let wrap_parse: ( (_, 'a, _) parse) -> iseq:('a -> 'a -> bool) -> ('a -> string) -> (string * 'a option) -> unit
+let wrap_parse
+: ( (_, 'a, _) parse) -> iseq:('a -> 'a -> bool) -> ('a -> string) -> (string * 'a option) -> unit
 = fun parser_f ~iseq tostr (line, expected) ->
   let lex = new Lexer.lexer line in
   match (parser_f lex, expected) with
