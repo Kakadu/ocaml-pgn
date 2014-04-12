@@ -204,6 +204,9 @@ module Board = struct
     (match v with
     | VA -> 1 | VB -> 2 | VC -> 3 | VD -> 4 | VE -> 5 | VF -> 6 | VG -> 7 | VH -> 8) - 1
 
+  let horizontal_of_int x = cell_of_celli (0,x) |> snd
+  let vertical_of_int x = cell_of_celli (x,0) |> fst
+
   let color_of_cell (v,h) =
     let v1 = int_of_vertical v in
     let h1 = int_of_horizontal h in
@@ -354,6 +357,17 @@ module Board = struct
   let is_horiz c = Char.(code c >= code '1' && code c <= code '8')
   let inverse_color = function White -> Black | Black -> White
 
+  (* for e5 should return e4 *)
+  let down_cell_exn (v,h) =
+    let _h = int_of_horizontal h in
+    if _h=0 then failwith "Bad argument of down_cell_exn";
+    (v, horizontal_of_int (_h-1))
+
+  let up_cell_exn (v,h) =
+    let _h = int_of_horizontal h in
+    if _h=7 then failwith "Bad argument of up_cell_exn";
+    (v, horizontal_of_int (_h+1))
+
   let cell_of_string s =
     let v = match s.[0] with
       | 'a' -> VA | 'b' -> VB | 'c' -> VC | 'd' -> VD | 'e' -> VE | 'f' -> VF | 'g' -> VG | 'h' -> VH
@@ -453,8 +467,14 @@ module Board = struct
           set_cell_value b e4 (Some(White,Pawn));
           Some (inverse_color side_color, b)
         end else failwith (sprintf "Can't make pawn move '%s'" move_str)
-      end else begin
-        failwith "TODO: implement white moves on black's board"
+      end else if h=H8 then failwith "promotion is not supported" else begin
+        printf "Moving pawn....\n";
+        let dest = (v,h) in
+        let prev = down_cell_exn dest in
+        set_cell_value b dest (get_cell_value b prev);
+        set_cell_value b prev None;
+        Some (inverse_color side_color, b)
+        (* failwith "TODO: implement white moves on black's board" *)
       end
     end else if is_pawn_move && side_color=Black then begin
       let (v,h) = cell_of_string move_str in
@@ -468,7 +488,7 @@ module Board = struct
           set_cell_value b e7 None;
           set_cell_value b e5 (Some(White,Pawn));
           Some (inverse_color side_color, b)
-        end else if empty_cell b e7 && (get_cell_value b e6 = Some (White,Pawn)) then begin
+        end else if  (get_cell_value b e6 = Some (Black,Pawn)) then begin
           set_cell_value b e6 None;
           set_cell_value b e5 (Some(White,Pawn));
           Some (inverse_color side_color, b)
@@ -479,9 +499,14 @@ module Board = struct
           set_cell_value b (v,prev_hor) None;
           set_cell_value b (v,h)        (Some (Black,Pawn));
           Some (inverse_color side_color,b)
-        end else begin
-          failwith "TODO: implement white moves on black's board"
-        end
+        end else if h=H1 then failwith "Promotion is not supported" else begin
+          printf "Moving pawn....\n";
+          let dest = (v,h) in
+          let prev = up_cell_exn dest in
+          set_cell_value b dest (get_cell_value b prev);
+          set_cell_value b prev None;
+          Some (inverse_color side_color, b)
+       end
       | _ -> failwith "impossible"
     end else begin
       let (figure,takes,dest) = is_figure_move () in
