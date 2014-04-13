@@ -32,7 +32,7 @@ let parse_tag_line line =
 let parse_move line =
   let l = new Lexer.lexer line in
   match Parser.move l with
-  | Parsed ((m,_),_) -> printf "Move parsed: %s = %s\n" line m.move
+  | Parsed ((m,_),_) -> printf "Move parsed: %s = %s\n" line (string_of_move m.move)
   | Failed r -> printf "Failed! %s\n" (Ostap.Reason.toString `All `Desc r)
 
 

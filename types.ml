@@ -7,12 +7,17 @@ type 'a result = [ `Ok of 'a | `Error of string ]
 
 let string_of_char c = let ans = " " in ans.[0] <- c; ans
 
+let with_buffer ?size f =
+  let b = Buffer.create 10 in
+  f b;
+  Buffer.contents b
 
 module Option = struct
   let get ~default = function Some x -> x | None -> default
   let iter ~f = function Some x -> f x | None -> ()
   let (>>=) x f = match x with None -> None | Some x -> f x
   let (>|=) x f = match x with None -> None | Some x -> Some (f x)
+  let is_some = function Some _ -> true | None  -> false
 end
 
 module String = struct
@@ -43,8 +48,78 @@ module String = struct
   let index s c = try Some(index_exn s c) with Not_found -> None
 end
 
+type color = White | Black with sexp
+type figure = King | Queen | Bishop | Knight | Rook | Pawn with sexp
+(* It will be great to have something like enumerable there *)
+type file = VA|VB|VC|VD|VE|VF|VG|VH with sexp (* вертикаль *)
+type rank = H1|H2|H3|H4|H5|H6|H7|H8 with sexp (* горизонталь *)
+type cell = file*rank
 
-type move = string
+let figure_to_char = function
+  | King   -> 'K' | Queen  -> 'Q' | Rook -> 'R'
+  | Bishop -> 'B' | Knight -> 'N' | Pawn -> 'P'
+let char_of_figure = figure_to_char
+
+let int_of_file = function
+  | VA -> 0 | VB -> 1 | VC -> 2 | VD->3 | VE-> 4 | VF->5 | VG->6 | VH->7
+let int_of_rank = function
+  | H1 -> 0 | H2 -> 1 | H3 -> 2 | H4->3 | H5-> 4 | H6->5 | H7->6 | H8->7
+
+let char_of_file v = Char.chr (Char.code 'a' + (int_of_file v))
+let char_of_rank h = Char.chr (Char.code '1' + (int_of_rank h))
+let string_of_cell (v,h) = sprintf "%c%c" (char_of_file v) (char_of_rank h)
+
+type mm_postfix = [`Check | `Checkmate ] option
+type mm_takes = bool
+type mm_fig_hint = [ `File of file | `Rank of rank ] option
+type move_kind =
+  | CastleKingSide
+  | CastleQueenSide
+  | FigureMoves of figure * cell * mm_fig_hint * mm_takes
+  | PawnTakes of file*cell (* vert*cell *)
+  | PawnTakesPromotion of file*cell* figure
+  (* TODO: Pawn can't promote to King. Use PolyVariants *)
+  | PawnMoves of cell (* when 1 <= rank <=6 *)
+  | PawnPromotion of cell*figure (* TODO: figure can't be a king *)
+
+type move = move_kind * mm_postfix
+
+let move_equal m1 m2 = (m1=m2)
+
+let string_of_postfix = function
+  | Some `Check -> "+"
+  | Some `Checkmate -> "#"
+  | None -> ""
+
+let string_of_move: move -> string = fun (k,pf) ->
+  let pfs = string_of_postfix pf in
+  let add_hint b = function
+    | Some (`File file) -> Buffer.add_char b (char_of_file file)
+    | Some (`Rank file) -> Buffer.add_char b (char_of_rank file)
+    | None -> ()
+  in
+  with_buffer @@ fun b ->
+  let () = match k with
+    | PawnPromotion (cell,figure) -> Buffer.add_string b @@
+      sprintf "%s=%c" (string_of_cell cell) (char_of_figure figure)
+    | PawnTakesPromotion (file,cell,figure) -> Buffer.add_string b @@
+      sprintf "%cx%s=%c" (char_of_file file) (string_of_cell cell) (char_of_figure figure)
+    | PawnMoves cell ->
+      Buffer.add_string b (string_of_cell cell)
+    | PawnTakes (file,cell) -> Buffer.add_string b @@
+      sprintf "%cx%s%s" (char_of_file file) (string_of_cell cell) pfs
+    | FigureMoves (fig,cell,hint,takes) ->
+      Buffer.add_char b (char_of_figure fig);
+      add_hint b hint;
+      if takes then Buffer.add_char b 'x';
+      Buffer.add_string b (string_of_cell cell)
+    | CastleKingSide -> Buffer.add_string b (sprintf "O-O%s" pfs)
+    | CastleQueenSide -> Buffer.add_string b (sprintf "O-O-O%s" pfs)
+    | _ -> assert false
+  in
+  Buffer.add_string b pfs
+
+
 type game_res = WhiteWon | BlackWon | Draw | NoResult
 type tree = {
     nags: int list;
@@ -93,13 +168,13 @@ let move_tree_to_string root =
   in
   let rec inner : tree -> unit = fun {move; nags; pre_ann; post_ann; variants; next } ->
       ann pre_ann;
-      add_string move;
+      add_string (string_of_move move);
       add_string " ";
       ann post_ann;
       List.iter (fun root -> add_string "( ";
 	let () = match root with
 	| `NullMoves xs ->
-	  List.iter (fun (text, move) -> ann text; add_string move) xs
+	  List.iter (fun (text, move) -> ann text; add_string (string_of_move move)) xs
 	| `Continue tree -> inner tree
 	in
 	add_string " )"
@@ -118,20 +193,10 @@ let string_of_pgn_file : game -> string = fun (tags, tree) ->
   sprintf "%s\n%s" tags s2
 
 module Board = struct
-  type color = White | Black with sexp
-  type figure = King | Queen | Bishop | Knight | Rook | Pawn with sexp
-  (* It will be great to have something like enumerable there *)
-  type file = VA|VB|VC|VD|VE|VF|VG|VH with sexp (* вертикаль *)
-  type rank = H1|H2|H3|H4|H5|H6|H7|H8 with sexp (* горизонталь *)
   type cell = file*rank with sexp
   type celli = int*int (* [0..7] * [0..7] *)
   type board_cell_content = (color*figure) option with sexp
   type t = board_cell_content array array with sexp
-
-  let figure_to_char = function
-    | King   -> 'K' | Queen  -> 'Q' | Rook -> 'R'
-    | Bishop -> 'B' | Knight -> 'N' | Pawn -> 'P'
-  let char_of_figure = figure_to_char
 
   let figure_of_char = function
     | 'K' -> King   | 'Q' -> Queen  | 'R' -> Rook
@@ -154,14 +219,6 @@ module Board = struct
       | _ -> failwith "Bad argument of cell_of_celli"
     in
     (v,h)
-
-  let string_of_cell (v,h) =
-    let ans = "__" in
-    ans.[0] <- (match v with
-               | VA -> 'c' | VB -> 'b' | VC ->'c' | VD->'d' |VE-> 'e'|VF->'f'|VG->'g'|VH->'h');
-    ans.[1] <- (match h with
-               | H1 -> '1' | H2 -> '2' | H3 ->'3' | H4->'4' |H5-> '5'|H6->'6'|H7->'7'|H8->'8');
-    ans
 
   let string_of_celli (v,h) =
     let ans = "__" in
@@ -432,7 +489,8 @@ module Board = struct
       Some ansb
     | _ -> None
 
-  let make_move: string -> (color * t) -> (color * t) option = fun move_str (side_color, board) ->
+  let make_move: move -> (color * t) -> (color * t) option = fun move_str (side_color, board) ->
+    None (*
     let b = copy board in
     printf "make_move '%s': cur color: %s, Current board is:\n%s\n" move_str
       (Sexplib.Sexp.to_string_hum @@ sexp_of_color side_color)
@@ -511,14 +569,14 @@ module Board = struct
     end else begin
       let (figure,takes,dest) = is_figure_move () in
       Option.(move_figure b side_color figure takes dest >>= fun x -> Some (next_color side_color,x))
-    end
+    end*)
 end
 
 let validate_game root =
   let (>>=) = Option.(>>=) in
-  let rec helper (board: (Board.color * Board.t) option) root =
-    let init: (Board.color * Board.t) option  = board >>= Board.make_move root.move in
-    let f : (Board.color * Board.t) option -> _ -> (Board.color * Board.t) option =
+  let rec helper (board: (color * Board.t) option) root =
+    let init: (color * Board.t) option  = board >>= Board.make_move root.move in
+    let f : (color * Board.t) option -> _ -> (color * Board.t) option =
       fun acc -> function
       | `Continue x -> (helper acc x)   (* TODO *)
       | `NullMoves _ -> acc
@@ -528,5 +586,5 @@ let validate_game root =
     | `Result _ -> init
     | `Continue root2 -> helper init root2) >>= fun _ -> List.fold_left f init root.variants
   in
-  helper (Some (Board.White, Board.create ())) root
+  helper (Some (White, Board.create ())) root
 

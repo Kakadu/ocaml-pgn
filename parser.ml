@@ -28,31 +28,40 @@ let no1 s = String.sub s 1 (String.length s - 1)
 let () = ()
 
 ostap (
-  figure: a:("K" | "Q" | "R" | "N" | "B") { repr a };
-  vert: x:("a"|"b"|"c"|"d"|"e"|"f"|"g"|"h") { repr x };
+  figure: "K" { King } | "Q" { Queen } | "R" {Rook} | "N" {Knight} | "B" {Bishop};
+  vert: "a"{VA}|"b"{VB}|"c"{VC}|"d"{VD}|"e"{VE}|"f"{VF}|"g"{VG} | "h"{VH};
+  hor:  "1"{H1}|"2"{H2}|"3"{H3}|"4"{H4}|"5"{H5}|"6"{H6}|"7"{H7}|"8"{H8};
   nag:  x:NAG => { good_nag_str (repr x) } => {
     x |> repr |> no1 |> int_of_string
   };
-  hor:  x:("1"|"2"|"3"|"4"|"5"|"6"|"7"|"8")  { repr x };
-  move_postfix: "#" { () } | "+" {()} | -"=" figure {()} | "++" { () };
+  move_postfix: "#" {`Checkmate} | "++" {`Checkmate} | "+" { `Check };
+  pawn_promotion: -"=" figure;
+  fig_hint:
+      h:hor  { `Rank h }
+    | v:vert { `File v }
+  ;
   move_itself:
-      x:"0-0-0" move_postfix? { repr x }
-    | x:"O-O-O" move_postfix? { repr x }
-    | x:"0-0" move_postfix? { repr x }
-    | x:"O-O" move_postfix? { repr x }
-    | f:figure v1:(vert) takes:("x"?) v2:vert h:hor p:move_postfix? { (* Nbxd7+ *)
-        sprintf "%s%s%s%s%s" f v1
-	  (match takes with Some x -> repr x | None -> "") v2 h
+      "0-0-0" y:move_postfix? { (CastleQueenSide,y) }
+    | "O-O-O" y:move_postfix? { (CastleQueenSide,y) }
+    | "0-0"   y:move_postfix? { (CastleKingSide,y) }
+    | "O-O"   y:move_postfix? { (CastleKingSide,y) }
+    | f:figure hint:(fig_hint)? takes:("x"?) v2:vert h:hor p:move_postfix? { (* Nbxd7+ *)
+        (FigureMoves(f, (v2,h), hint, Option.is_some takes),p)
     }
     | f:figure takes:("x"?) v2:vert h:hor p:move_postfix? { (* Nxe4+, Nf3# *)
-        sprintf "%s%s%s%s" f
-	  (match takes with Some x -> repr x | None -> "") v2 h
+        (FigureMoves(f, (v2,h), None, false), p)
+    }
+    | pawn:vert "x" v:vert h:hor "=" prom:figure p:move_postfix? { (* exf8=N+ *)
+        (PawnTakesPromotion (pawn, (v,h), prom), p)
     }
     | pawn:vert "x" v:vert h:hor p:move_postfix? { (* cxd5+ *)
-        sprintf "%sx%s%s" pawn v h
-    }
-    | pawn:vert h:hor p:move_postfix? { (* pawn moves *)
-        sprintf "%s%s" pawn h
+        (PawnTakes (pawn, (v,h)), p)
+    } (* TODO: guards *)
+    | v:vert h:hor "=" prom:figure p:move_postfix? { (* a8=Q+*)
+        (PawnPromotion((v,h), prom), p)
+      }
+    | v:vert h:hor p:move_postfix? {
+        (PawnMoves(v,h), p)
     };
   comment : "{" c:COMMENT "}" {
     let input = repr c in

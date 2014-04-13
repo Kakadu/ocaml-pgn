@@ -30,17 +30,14 @@ let wrap_parse
   | ((Failed r), Some _) ->
      report_error line
        ~msg:(sprintf "Can't parse when parse result expected. %s" (Ostap.Reason.toString `All `Desc r))
-(*
-let (_:int) = wrap_parse
-*)
+
 let string_equal (s:string) (s2:string) = (s=s2)
 let int_equal (x:int) y = (x=y)
 let tag_equal (a,b) (c,d) = (string_equal a c) && (string_equal b d)
-let move_equal a b = string_equal a.Types.move b.Types.move
 
 let test_tagline = wrap_parse Parser.tag Parser.string_of_tagresult ~iseq:tag_equal
-let test_move    = wrap_parse Parser.move (fun x -> x.Types.move)   ~iseq:move_equal
-let test_nag     = wrap_parse Parser.nag  (fun x -> string_of_int x) ~iseq:int_equal
+let test_move    = wrap_parse Parser.move_itself string_of_move   ~iseq:move_equal
+let test_nag     = wrap_parse Parser.nag  string_of_int    ~iseq:int_equal
 
 let () = List.iter (test_tagline)
   [ ("[White \"Kasparov\"]", (Some ("White","Kasparov")) )
@@ -54,10 +51,10 @@ let () = List.iter (test_tagline)
 let () =
   let make s = (s, Some (Types.move_of_string s)) in
   List.iter test_move
-  [ make "Nbd7"
-  ; make "e4"
-  ; make "Nf3"
-  ; make "Rhxd8"
+  [ ("Nbd7", Some (FigureMoves (Knight, (VD,H7), Some(`File VB), false), None ) )
+  ; "e4", Some (PawnMoves (VE,H4),None)
+  ; "Nf3", Some (FigureMoves (Knight, (VF,H3), None, false), None)
+  ; "Rhxd8", Some (FigureMoves (Rook, (VD,H8), Some (`File VH), true), None)
   ]
 
 let () = List.iter test_nag [ ("$111", Some 111) ]

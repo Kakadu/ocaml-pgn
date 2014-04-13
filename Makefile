@@ -3,6 +3,9 @@
 all:
 	ocamlbuild -use-ocamlfind pgn.cma pgn.cmxa test.native
 
+parse_test:
+	ocamlbuild -use-ocamlfind parse_test.native
+
 test: all
 	./test.native
 
