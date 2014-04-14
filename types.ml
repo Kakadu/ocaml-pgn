@@ -55,6 +55,7 @@ type file = VA|VB|VC|VD|VE|VF|VG|VH with sexp (* вертикаль *)
 type rank = H1|H2|H3|H4|H5|H6|H7|H8 with sexp (* горизонталь *)
 type cell = file*rank
 
+let string_of_color = function White -> "White" | Black -> "Black"
 let figure_to_char = function
   | King   -> 'K' | Queen  -> 'Q' | Rook -> 'R'
   | Bishop -> 'B' | Knight -> 'N' | Pawn -> 'P'
@@ -489,8 +490,103 @@ module Board = struct
       Some ansb
     | _ -> None
 
-  let make_move: move -> (color * t) -> (color * t) option = fun move_str (side_color, board) ->
-    None (*
+  let make_move: move -> (color * t) -> (color * t) option = fun (move,pfx) (side_color, board) ->
+    printf "make_move %s %s, current board:\n%s\n%!"
+      (string_of_color side_color) (string_of_move (move,pfx)) (to_string board);
+    let icolor = inverse_color side_color in
+    let b = copy board in
+    match move with
+    | CastleKingSide -> None
+    | CastleQueenSide  -> None
+    | FigureMoves (Queen, dest, _mm_fig_hint, mm_takes) ->
+      let cell_color = color_of_cell dest in
+      let xs = get_possible_queens side_color dest b in
+      printf "get_possible_queens: ";
+      List.iter (fun celli -> printf "%s " (string_of_cell celli)) xs;
+      printf "\n%!";
+      if List.length xs > 1 then failwith "XYZ";
+      let from  = List.hd xs in
+      set_cell_value b dest (get_cell_value b from);
+      set_cell_value b from None;
+      Some (icolor,b)
+
+    | FigureMoves (Knight, dest, _mm_fig_hint, mm_takes) ->
+      let cell_color = color_of_cell dest in
+      let xs = get_possible_knights side_color dest board in
+      printf "get_possible_knights: ";
+      List.iter (fun celli -> printf "%s " (string_of_cell celli)) xs;
+      printf "\n%!";
+      if List.length xs > 1 then failwith "XYZ";
+      let from  = List.hd xs in
+      set_cell_value b dest (get_cell_value b from);
+      set_cell_value b from None;
+      Some (icolor, b)
+
+    | FigureMoves (Bishop, dest, mm_fig_hint, mm_takes) ->
+      let cell_color = color_of_cell dest in
+      let xs = get_possible_bishops side_color dest board in
+      printf "get_possible_bishops: ";
+      List.iter (fun celli -> printf "%s " (string_of_cell celli)) xs;
+      printf "\n%!";
+      if List.length xs > 1 then failwith "XYZ";
+      let from  = List.hd xs in
+      set_cell_value b dest (get_cell_value b from);
+      set_cell_value b from None;
+      Some (icolor, b)
+    | FigureMoves (figure, cell, mm_fig_hint, mm_takes) -> None
+    | PawnTakes (file,cell) (* vert*cell *)  -> None
+    | PawnTakesPromotion (file,cell,figure) -> None
+    | PawnMoves (_,h) when h=H1 || h=H8 -> None
+    | PawnMoves (_,h) when h=H2 && side_color=White -> None
+    | PawnMoves (_,h) when h=H7 && side_color=Black -> None
+    | PawnMoves (v,H4) when side_color=White ->
+      let e2 = (v,H2) in
+      let e3 = (v,H3) in
+      let e4 = (v,H4) in
+      if empty_cell b e3 && (get_cell_value b e2 = Some (White,Pawn)) then begin
+        (* Move from starting position *)
+        set_cell_value b e2 None;
+        set_cell_value b e4 (Some(White,Pawn));
+        Some (inverse_color side_color, b)
+      end else if empty_cell b e2 && (get_cell_value b e3 = Some (White,Pawn)) then begin
+        set_cell_value b e3 None;
+        set_cell_value b e4 (Some(White,Pawn));
+        Some (inverse_color side_color, b)
+      end else failwith (sprintf "Can't make pawn move '%s'" (string_of_move (move,pfx)) )
+    | PawnMoves (v,H5) when side_color=Black ->
+      let e2 = (v,H7) in
+      let e3 = (v,H6) in
+      let e4 = (v,H5) in
+      if empty_cell b e3 && (get_cell_value b e2 = Some (side_color,Pawn)) then begin
+        (* Move from starting position *)
+        set_cell_value b e2 None;
+        set_cell_value b e4 (Some(side_color,Pawn));
+        Some (inverse_color side_color, b)
+      end else if (get_cell_value b e3 = Some (side_color,Pawn)) then begin
+        set_cell_value b e3 None;
+        set_cell_value b e4 (Some(side_color,Pawn));
+        Some (inverse_color side_color, b)
+      end else failwith (sprintf "Can't make pawn move '%s'" (string_of_move (move,pfx)) )
+    | PawnMoves (v,h) when side_color=Black  ->
+      printf "Moving black pawn....\n";
+      let dest = (v,h) in
+      let prev = up_cell_exn dest in
+      set_cell_value b dest (get_cell_value b prev);
+      set_cell_value b prev None;
+      Some (inverse_color side_color, b)
+    | PawnMoves dest when side_color=White  ->
+      printf "Moving white pawn....\n";
+(*      let dest = (v,h) in*)
+      let prev = down_cell_exn dest in
+      set_cell_value b dest (get_cell_value b prev);
+      set_cell_value b prev None;
+      Some (inverse_color side_color, b)
+    | PawnMoves (v,h)    -> None
+    | PawnMoves (v,h)    -> None
+    | PawnMoves (v,h)   -> None
+    | PawnPromotion (cell,figure) (* TODO: figure can't be a king *)  -> None
+
+ (*
     let b = copy board in
     printf "make_move '%s': cur color: %s, Current board is:\n%s\n" move_str
       (Sexplib.Sexp.to_string_hum @@ sexp_of_color side_color)
