@@ -396,6 +396,17 @@ module Board = struct
     loop_gen go_br (go_br celli);
     !ans
 
+  let get_possible_rooks = failwith "not_implemented"
+  let get_possible_kings = failwith "not_implemented"
+
+  let wrap_get_possible = function
+    | Queen -> get_possible_queens
+    | Bishop -> get_possible_bishops
+    | Rook   -> get_possible_rooks
+    | King   -> get_possible_kings
+    | Knight -> get_possible_knights
+    | Pawn   -> failwith  "Bad argument of wrap_get_possible"
+
   let create () =
     let b = Array.init 8 (fun _ -> Array.init 8 (fun _ -> None)) in
     for j=0 to 7 do
