@@ -66,6 +66,8 @@ let int_of_file = function
 let int_of_rank = function
   | H1 -> 0 | H2 -> 1 | H3 -> 2 | H4->3 | H5-> 4 | H6->5 | H7->6 | H8->7
 
+let near_files f1 f2 = abs (int_of_file f1 - (int_of_file f2)) = 1
+
 let char_of_file v = Char.chr (Char.code 'a' + (int_of_file v))
 let char_of_rank h = Char.chr (Char.code '1' + (int_of_rank h))
 let string_of_cell (v,h) = sprintf "%c%c" (char_of_file v) (char_of_rank h)
@@ -328,6 +330,15 @@ module Board = struct
     done;
     !ans
 
+  let get_possible_kings : color -> cell -> t -> cell list = fun who_moves (v,h) b ->
+    let genf (x,y) = fun (a,b) -> (a+x,b+y) in
+    let fs = List.map genf [(1,1);(1,0);(1,-1); (0,-1);(0,1); (-1,-1);(-1,0);(-1,1)] in
+    let (i1,j1) = celli_of_cell (v,h) in
+    let inboard (x,y) = (x>=0)&&(y>=0)&&(x<=7)&&(y<=7) in
+    let sq8 = List.filter inboard @@ List.map (fun f -> f (i1,j1)) fs in
+    let sq8 = List.filter (fun (x,y) -> b.(x).(y) = Some (who_moves, King)) sq8 in
+    List.map cell_of_celli sq8
+
   let get_possible_knights : color -> cell -> t -> cell list = fun who_moves (v,h) b ->
     let genf (x,y) = fun (a,b) -> (a+x,b+y) in
     let fs = List.map genf [(1,2);(2,1);(2,-1);(1,-2);(-1,-2);(-2,-1);(-2,1);(-1,2)] in
@@ -396,8 +407,29 @@ module Board = struct
     loop_gen go_br (go_br celli);
     !ans
 
-  let get_possible_rooks = failwith "not_implemented"
-  let get_possible_kings = failwith "not_implemented"
+  let get_possible_rooks : color -> cell -> t -> cell list = fun who_moves from b ->
+    let ((i1,j1) as celli) = celli_of_cell from in
+    let color = color_of_cell from in
+    let ans = ref [] in
+    let go_l (x,y) = (x-1,y) in
+    let go_r (x,y) = (x+1,y) in
+    let go_t (x,y) = (x,y+1) in
+    let go_b (x,y) = (x,y-1) in
+    let loop_gen go_f =
+      let rec loop ((x,y) as loc) =
+        if x<0 || y<0 || x>7 || y>7 then () else
+        if empty_celli b loc then loop (go_f loc) else
+        if b.(x).(y) = Some (who_moves, Rook) then
+          (ans:=cell_of_celli loc :: !ans; loop (go_f loc) )
+        else ()
+      in
+      loop
+    in
+    loop_gen go_l (go_l celli);
+    loop_gen go_r (go_r celli);
+    loop_gen go_t (go_t celli);
+    loop_gen go_b (go_b celli);
+    !ans
 
   let wrap_get_possible = function
     | Queen -> get_possible_queens
@@ -451,55 +483,8 @@ module Board = struct
   let make_cell c1 c2 = let ans = "11" in ans.[0]<-c1; ans.[1]<-c2; ans
   let get_content b cell = b.(Char.code cell.[0] - Char.code 'a').(Char.code cell.[1] - Char.code '1')
 
-  (* [board] current board which
-   * [color] White or Black
-   * [figure] is which piece moves. (pawns not included)
-   * [takes]  is boolean flags which indicates that piece is taking another peice
-   * [helper] additional info about piece, for example 'a' in Rab1
-   * [dest] is destination cell on the board.
-   **)
-  let move_figure : t -> color -> figure -> bool -> ?helper:string -> file*rank -> t option
-  = fun board color figure takes ?helper dest ->
-    printf "move_figure: dest=%c%s\n" (char_of_figure figure)  (string_of_cell dest);
-
-    let ansb = copy board in
-    (*let (>>=) = Option.(>>=) in*)
-    (*let (>|=) = Option.(>|=) in*)
-    match figure with
-    | Bishop ->
-      let cell_color = color_of_cell dest in
-      let xs = get_possible_bishops color dest board in
-      printf "get_possible_bishops: ";
-      List.iter (fun celli -> printf "%s " (string_of_cell celli)) xs;
-      printf "\n%!";
-      if List.length xs > 1 then failwith "XYZ";
-      let from  = List.hd xs in
-      set_cell_value ansb dest (get_cell_value ansb from);
-      set_cell_value ansb from None;
-      Some ansb
-    | Knight ->
-      let cell_color = color_of_cell dest in
-      let xs = get_possible_knights color dest board in
-      printf "get_possible_knights: ";
-      List.iter (fun celli -> printf "%s " (string_of_cell celli)) xs;
-      printf "\n%!";
-      if List.length xs > 1 then failwith "XYZ";
-      let from  = List.hd xs in
-      set_cell_value ansb dest (get_cell_value ansb from);
-      set_cell_value ansb from None;
-      Some ansb
-    | Queen ->
-      let cell_color = color_of_cell dest in
-      let xs = get_possible_queens color dest board in
-      printf "get_possible_queens: ";
-      List.iter (fun celli -> printf "%s " (string_of_cell celli)) xs;
-      printf "\n%!";
-      if List.length xs > 1 then failwith "XYZ";
-      let from  = List.hd xs in
-      set_cell_value ansb dest (get_cell_value ansb from);
-      set_cell_value ansb from None;
-      Some ansb
-    | _ -> None
+  let can_castle_ks _board _color = true
+  let can_castle_qs _ _ = true
 
   let make_move: move -> (color * t) -> (color * t) option = fun (move,pfx) (side_color, board) ->
     printf "make_move %s %s, current board:\n%s\n%!"
@@ -507,45 +492,73 @@ module Board = struct
     let icolor = inverse_color side_color in
     let b = copy board in
     match move with
+    | CastleKingSide when side_color=White && can_castle_ks b White ->
+      assert (get_cell_value b (VE,H1) = Some (side_color, King));
+      assert (get_cell_value b (VF,H1) = None);
+      assert (get_cell_value b (VG,H1) = None);
+      assert (get_cell_value b (VH,H1) = Some (side_color, Rook));
+      set_cell_value b (VE,H1) None;
+      set_cell_value b (VF,H1) (Some (White,Rook));
+      set_cell_value b (VG,H1) (Some (White,King));
+      set_cell_value b (VH,H1) None;
+      Some (icolor, b)
+    | CastleKingSide when side_color=Black && can_castle_ks b Black ->
+      assert (get_cell_value b (VE,H8) = Some (side_color, King));
+      assert (get_cell_value b (VF,H8) = None);
+      assert (get_cell_value b (VG,H8) = None);
+      assert (get_cell_value b (VH,H8) = Some (side_color, Rook));
+      set_cell_value b (VE,H8) None;
+      set_cell_value b (VF,H8) (Some (Black,Rook));
+      set_cell_value b (VG,H8) (Some (Black,King));
+      set_cell_value b (VH,H8) None;
+      Some (icolor, b)
     | CastleKingSide -> None
-    | CastleQueenSide  -> None
-    | FigureMoves (Queen, dest, _mm_fig_hint, mm_takes) ->
+    | CastleQueenSide  -> failwith "Castle Queen side not implemented"
+    | FigureMoves (fig, dest, mm_fig_hint, mm_takes) ->
       let cell_color = color_of_cell dest in
-      let xs = get_possible_queens side_color dest b in
-      printf "get_possible_queens: ";
+      let xs = wrap_get_possible fig side_color dest b in
+      printf "get_possible %c's: " (char_of_figure fig);
       List.iter (fun celli -> printf "%s " (string_of_cell celli)) xs;
       printf "\n%!";
-      if List.length xs > 1 then failwith "XYZ";
-      let from  = List.hd xs in
+      let from = match xs, mm_fig_hint with
+        | [x],_ -> x
+        | xs,Some (`File v) ->
+          let ys = List.filter (fun (_v,_) -> _v=v) xs in
+          if List.length ys <> 1 then failwith "Can't remove ambiguities"
+          else List.hd ys
+        | xs,Some (`Rank h) ->
+          let ys = List.filter (fun (_,_h) -> _h=h) xs in
+          if List.length ys <> 1 then failwith "Can't remove ambiguities"
+          else List.hd ys
+        | xs,None -> failwith "XYZ"
+      in
       set_cell_value b dest (get_cell_value b from);
       set_cell_value b from None;
       Some (icolor,b)
-
-    | FigureMoves (Knight, dest, _mm_fig_hint, mm_takes) ->
-      let cell_color = color_of_cell dest in
-      let xs = get_possible_knights side_color dest board in
-      printf "get_possible_knights: ";
-      List.iter (fun celli -> printf "%s " (string_of_cell celli)) xs;
-      printf "\n%!";
-      if List.length xs > 1 then failwith "XYZ";
-      let from  = List.hd xs in
-      set_cell_value b dest (get_cell_value b from);
-      set_cell_value b from None;
-      Some (icolor, b)
-
-    | FigureMoves (Bishop, dest, mm_fig_hint, mm_takes) ->
-      let cell_color = color_of_cell dest in
-      let xs = get_possible_bishops side_color dest board in
-      printf "get_possible_bishops: ";
-      List.iter (fun celli -> printf "%s " (string_of_cell celli)) xs;
-      printf "\n%!";
-      if List.length xs > 1 then failwith "XYZ";
-      let from  = List.hd xs in
-      set_cell_value b dest (get_cell_value b from);
-      set_cell_value b from None;
-      Some (icolor, b)
     | FigureMoves (figure, cell, mm_fig_hint, mm_takes) -> None
-    | PawnTakes (file,cell) (* vert*cell *)  -> None
+
+    | PawnTakes (f1,(f2,_)) when not (near_files f1 f2) ->
+      failwith "When pawn takes lines should be near";
+    | PawnTakes (file,cell) when side_color=White ->
+      let (_,down_rank) = down_cell_exn cell in
+      let from = (file,down_rank) in
+      (* TODO: implement en passant *)
+      if (get_cell_value b from = Some(side_color,Pawn)) && (get_cell_value b cell <> None) then (
+        set_cell_value b from None;
+        set_cell_value b cell (Some (side_color, Pawn));
+        Some (icolor, b)
+      ) else None
+    | PawnTakes (file,cell) when side_color=Black ->
+      let (_,up_rank) = up_cell_exn cell in
+      let from = (file,up_rank) in
+      (* TODO: implement en passant *)
+      if (get_cell_value b from = Some(side_color,Pawn)) && (get_cell_value b cell <> None) then (
+        set_cell_value b from None;
+        set_cell_value b cell (Some (side_color, Pawn));
+        Some (icolor, b)
+      ) else None
+
+    | PawnTakes (file,cell) -> None
     | PawnTakesPromotion (file,cell,figure) -> None
     | PawnMoves (_,h) when h=H1 || h=H8 -> None
     | PawnMoves (_,h) when h=H2 && side_color=White -> None
