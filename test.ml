@@ -49,7 +49,6 @@ let () = List.iter (test_tagline)
   ]
 
 let () =
-  let make s = (s, Some (Types.move_of_string s)) in
   List.iter test_move
   [ ("Nbd7", Some (FigureMoves (Knight, (VD,H7), Some(`File VB), false), None ) )
   ; "e4", Some (PawnMoves (VE,H4),None)
@@ -73,18 +72,20 @@ let () =
     ; "Myers", "Myers"
     ; " x y z ", "x y z"
     ]
-
+(*
 let () = Pgn.parse_file "game.pgn"
-
+ *)
 (*
 let () = Pgn.parse_file "CapablancaYaffe.pgn"
 
 let _ = exit 0
 
+ *)
+(*
+let () = Pgn.parse_file "game2.pgn" *)
 
-let () = Pgn.parse_file "game2.pgn"
+let () = Pgn.parse_file "musketeer.pgn"
 
-*)
 (*
 let () = Pgn.parse_file "ChigorinSteinitz.pgn"
 *)

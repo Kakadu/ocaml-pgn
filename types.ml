@@ -118,7 +118,6 @@ let string_of_move: move -> string = fun (k,pf) ->
       Buffer.add_string b (string_of_cell cell)
     | CastleKingSide -> Buffer.add_string b (sprintf "O-O%s" pfs)
     | CastleQueenSide -> Buffer.add_string b (sprintf "O-O-O%s" pfs)
-    | _ -> assert false
   in
   Buffer.add_string b pfs
 
@@ -350,7 +349,6 @@ module Board = struct
 
   let get_possible_queens : color -> cell -> t -> cell list = fun who_moves (v,h) b ->
     let celli = celli_of_cell (v,h) in
-    let color = color_of_cell  (v,h) in
     let ans = ref [] in
     let go_tl (x,y) = (x-1,y+1) in
     let go_bl (x,y) = (x-1,y-1) in
@@ -383,9 +381,6 @@ module Board = struct
 
   let get_possible_bishops : color -> cell -> t -> cell list = fun who_moves (v,h) b ->
     let celli = celli_of_cell (v,h) in
-    let i1 = int_of_vertical v in
-    let j1 = int_of_horizontal h in
-    let color = color_of_cell  (v,h) in
     let ans = ref [] in
     let go_tl (x,y) = (x-1,y+1) in
     let go_bl (x,y) = (x-1,y-1) in
@@ -409,7 +404,6 @@ module Board = struct
 
   let get_possible_rooks : color -> cell -> t -> cell list = fun who_moves from b ->
     let ((i1,j1) as celli) = celli_of_cell from in
-    let color = color_of_cell from in
     let ans = ref [] in
     let go_l (x,y) = (x-1,y) in
     let go_r (x,y) = (x+1,y) in
@@ -513,9 +507,32 @@ module Board = struct
       set_cell_value b (VH,H8) None;
       Some (icolor, b)
     | CastleKingSide -> None
-    | CastleQueenSide  -> failwith "Castle Queen side not implemented"
+    | CastleQueenSide when side_color=Black && can_castle_ks b Black ->
+      assert (get_cell_value b (VE,H8) = Some (side_color, King));
+      assert (get_cell_value b (VD,H8) = None);
+      assert (get_cell_value b (VC,H8) = None);
+      assert (get_cell_value b (VB,H8) = None);
+      assert (get_cell_value b (VA,H8) = Some (side_color, Rook));
+      set_cell_value b (VE,H8) None;
+      set_cell_value b (VD,H8) (Some (Black,Rook));
+      set_cell_value b (VC,H8) (Some (Black,King));
+      set_cell_value b (VB,H8) None;
+      set_cell_value b (VA,H8) None;
+      Some (icolor, b)
+    | CastleQueenSide when side_color=White && can_castle_ks b White ->
+      assert (get_cell_value b (VE,H1) = Some (side_color, King));
+      assert (get_cell_value b (VD,H1) = None);
+      assert (get_cell_value b (VC,H1) = None);
+      assert (get_cell_value b (VB,H1) = None);
+      assert (get_cell_value b (VA,H1) = Some (side_color, Rook));
+      set_cell_value b (VE,H1) None;
+      set_cell_value b (VD,H1) (Some (White,Rook));
+      set_cell_value b (VC,H1) (Some (White,King));
+      set_cell_value b (VB,H1) None;
+      set_cell_value b (VA,H1) None;
+      Some (icolor, b)
+    | CastleQueenSide  -> None
     | FigureMoves (fig, dest, mm_fig_hint, mm_takes) ->
-      let cell_color = color_of_cell dest in
       let xs = wrap_get_possible fig side_color dest b in
       printf "get_possible %c's: " (char_of_figure fig);
       List.iter (fun celli -> printf "%s " (string_of_cell celli)) xs;
@@ -535,7 +552,6 @@ module Board = struct
       set_cell_value b dest (get_cell_value b from);
       set_cell_value b from None;
       Some (icolor,b)
-    | FigureMoves (figure, cell, mm_fig_hint, mm_takes) -> None
 
     | PawnTakes (f1,(f2,_)) when not (near_files f1 f2) ->
       failwith "When pawn takes lines should be near";
@@ -606,9 +622,18 @@ module Board = struct
       set_cell_value b prev None;
       Some (inverse_color side_color, b)
     | PawnMoves (v,h)    -> None
-    | PawnMoves (v,h)    -> None
-    | PawnMoves (v,h)   -> None
-    | PawnPromotion (cell,figure) (* TODO: figure can't be a king *)  -> None
+    | PawnPromotion (cell,King)   -> None
+    | PawnPromotion (cell,figure) when side_color=White   ->
+      let from = (fst cell, H7) in
+      set_cell_value b from None;
+      set_cell_value b cell (Some (side_color, figure));
+      Some (icolor, b)
+    | PawnPromotion (cell,figure) when side_color=Black ->
+      let from = (fst cell, H2) in
+      set_cell_value b from None;
+      set_cell_value b cell (Some (side_color, figure));
+      Some (icolor, b)
+    | PawnPromotion (_,_) -> None
 
  (*
     let b = copy board in

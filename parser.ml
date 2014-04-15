@@ -51,13 +51,13 @@ ostap (
     | f:figure takes:("x"?) v2:vert h:hor p:move_postfix? { (* Nxe4+, Nf3# *)
         (FigureMoves(f, (v2,h), None, false), p)
     }
-    | pawn:vert "x" v:vert h:hor "=" prom:figure p:move_postfix? { (* exf8=N+ *)
+    | pawn:vert "x" v:vert h:hor "="? prom:figure => {h=H8||h=H1} => p:move_postfix? { (* exf8=N+ *)
         (PawnTakesPromotion (pawn, (v,h), prom), p)
     }
     | pawn:vert "x" v:vert h:hor p:move_postfix? { (* cxd5+ *)
         (PawnTakes (pawn, (v,h)), p)
     } (* TODO: guards *)
-    | v:vert h:hor "=" prom:figure p:move_postfix? { (* a8=Q+*)
+    | v:vert h:hor "="? prom:figure  => {h=H8||h=H1} => p:move_postfix? { (* a8=Q+*)
         (PawnPromotion((v,h), prom), p)
       }
     | v:vert h:hor p:move_postfix? {
@@ -154,10 +154,7 @@ ostap (
 
 let (_: (_, string * string, _) Combinators.parse) = tag
 
-ostap ((*
-    moves: xs:(move_part+) {
-	List.flatten  xs
-      }; *)
+ostap (
     game: tags:(tag)+ initial_comment:(comment?) moves:move_tree {
       Option.iter initial_comment ~f:(printf  "Initial comment: %s\n%!");
       match moves with
