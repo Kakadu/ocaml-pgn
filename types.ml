@@ -197,10 +197,12 @@ let string_of_pgn_file : game -> string = fun (tags, tree) ->
 
 module Board = struct
   (* TODO: FEN https://en.wikipedia.org/wiki/Forsyth%E2%80%93Edwards_Notation *)
-  type cell = file*rank with sexp
   type celli = int*int (* [0..7] * [0..7] *)
   type board_cell_content = (color*figure) option with sexp
-  type t = board_cell_content array array with sexp
+  type t =
+    { cells: board_cell_content array array
+    ; en_passant: cell option
+    } with sexp
 
 
   let figure_of_char = function
@@ -242,18 +244,18 @@ module Board = struct
     let b = Array.init 8 (fun _ -> Array.init 8 (fun _ -> None)) in
     for i=0 to 7 do
       for j=0 to 7 do
-	b.(i).(j) <- board.(i).(j);
+	b.(i).(j) <- board.cells.(i).(j);
       done
     done;
-    b
+    { board with cells=b }
 
   let next_color = function White -> Black | Black -> White
 
-  let to_string (board: t) =
+  let to_string_pretty (board: t) =
     let b = Buffer.create 100 in
     for i = 7 downto 0 do
       for j=0 to 7 do
-	Buffer.add_char b (square_to_char board.(j).(i))
+	Buffer.add_char b (square_to_char board.cells.(j).(i))
       done;
       Buffer.add_char b '\n';
     done;
@@ -292,8 +294,8 @@ module Board = struct
     (v,h)
 
   let set b (v,h) content =
-    b.(int_of_vertical v).(int_of_horizontal h) <- content
-
+    b.cells.(int_of_vertical v).(int_of_horizontal h) <- content
+(*
   (* Place [v] to square [cell] on board [b]. [cell] is a string of length 2 *)
   let set_unsafe b cell v =
     if String.length cell <> 2 then failwith "bad arguments of set_unsafe";
@@ -304,15 +306,16 @@ module Board = struct
     if Char.(code1 < code '1' || code1 > code '8')
     then failwith "bad argument (horizontal) of set_unsafe";
     let ans = copy v in
-    ans.(Char.(code0 - code 'a')).(Char.(code1 - code '1')) <- Some v;
+    ans.cells.(Char.(code0 - code 'a')).(Char.(code1 - code '1')) <- Some v;
     ans
-
-  let get_cell_value b (v,h) = b.(int_of_vertical v).(int_of_horizontal h)
+ *)
+  let get_cell_value b (v,h) = b.cells.(int_of_vertical v).(int_of_horizontal h)
   let empty_cell b (v,h) =
     match get_cell_value b (v,h) with Some _ -> false | None -> true
-  let empty_celli b (x,y) = (b.(x).(y) = None)
 
-  let set_cell_value b (v,h) data = b.(int_of_vertical v).(int_of_horizontal h) <- data
+  let empty_celli b (x,y) = (b.cells.(x).(y) = None)
+
+  let set_cell_value (b:t) (v,h) data = b.cells.(int_of_vertical v).(int_of_horizontal h) <- data
 
   let empty_cell_unsafe b cell =
     match b.(Char.code cell.[0] - Char.code 'a').(Char.code cell.[1] - Char.code '1') with
@@ -338,7 +341,7 @@ module Board = struct
     let (i1,j1) = celli_of_cell (v,h) in
     let inboard (x,y) = (x>=0)&&(y>=0)&&(x<=7)&&(y<=7) in
     let sq8 = List.filter inboard @@ List.map (fun f -> f (i1,j1)) fs in
-    let sq8 = List.filter (fun (x,y) -> b.(x).(y) = Some (who_moves, King)) sq8 in
+    let sq8 = List.filter (fun (x,y) -> b.cells.(x).(y) = Some (who_moves, King)) sq8 in
     List.map cell_of_celli sq8
 
   let get_possible_knights : color -> cell -> t -> cell list = fun who_moves (v,h) b ->
@@ -347,7 +350,7 @@ module Board = struct
     let (i1,j1) = celli_of_cell (v,h) in
     let inboard (x,y) = (x>=0)&&(y>=0)&&(x<=7)&&(y<=7) in
     let sq8 = List.filter inboard @@ List.map (fun f -> f (i1,j1)) fs in
-    let sq8 = List.filter (fun (x,y) -> b.(x).(y) = Some (who_moves, Knight)) sq8 in
+    let sq8 = List.filter (fun (x,y) -> b.cells.(x).(y) = Some (who_moves, Knight)) sq8 in
     List.map (cell_of_celli) sq8
 
   let get_possible_queens : color -> cell -> t -> cell list = fun who_moves (v,h) b ->
@@ -366,7 +369,7 @@ module Board = struct
       let rec loop ((x,y) as loc) =
         if x<0 || y<0 || x>7 || y>7 then () else
         if empty_celli b loc then loop (go_f loc) else
-        if b.(x).(y) = Some (who_moves, Queen) then ans:=cell_of_celli loc :: !ans
+        if b.cells.(x).(y) = Some (who_moves, Queen) then ans:=cell_of_celli loc :: !ans
       in
       loop
     in
@@ -391,7 +394,7 @@ module Board = struct
       let rec loopTL ((x,y) as loc) =
         if x<0 || y<0 || x>7 || y>7 then () else
         if empty_celli b loc then loopTL (go_f loc) else
-        if b.(x).(y) = Some (who_moves, Bishop) then ans:= cell_of_celli loc :: !ans
+        if b.cells.(x).(y) = Some (who_moves, Bishop) then ans:= cell_of_celli loc :: !ans
       in
       loopTL
     in
@@ -412,7 +415,7 @@ module Board = struct
       let rec loop ((x,y) as loc) =
         if x<0 || y<0 || x>7 || y>7 then () else
         if empty_celli b loc then loop (go_f loc) else
-        if b.(x).(y) = Some (who_moves, Rook) then ans:=cell_of_celli loc :: !ans
+        if b.cells.(x).(y) = Some (who_moves, Rook) then ans:=cell_of_celli loc :: !ans
       in
       loop
     in
@@ -431,10 +434,12 @@ module Board = struct
     | Pawn   -> failwith  "Bad argument of wrap_get_possible"
 
   let create () =
-    let b = Array.init 8 (fun _ -> Array.init 8 (fun _ -> None)) in
+    let b = { cells=Array.init 8 (fun _ -> Array.init 8 (fun _ -> None))
+            ; en_passant=None }
+    in
     for j=0 to 7 do
-      b.(j).(1) <- Some (White,Pawn);
-      b.(j).(6) <- Some (Black,Pawn)
+      b.cells.(j).(1) <- Some (White,Pawn);
+      b.cells.(j).(6) <- Some (Black,Pawn)
     done;
     List.iter (fun (color, horiz) ->
         List.iter (fun v -> set_cell_value b (v,horiz) (Some (color,Rook)) )   [ VA; VH ];
@@ -478,10 +483,13 @@ module Board = struct
   let can_castle_qs _ _ = true
 
   let make_move: move -> (color * t) -> (color * t) option = fun (move,pfx) (side_color, _board) ->
-    printf "make_move %s %s, current board:\n%s\n%!"
-      (string_of_color side_color) (string_of_move (move,pfx)) (to_string _board);
+    let last_en_passant = _board.en_passant in
+    printf "make_move %s %s, en passant=%s, current board:\n%s\n%!"
+      (string_of_color side_color) (string_of_move (move,pfx))
+      (match last_en_passant with None -> "None" | Some x -> Sexplib.Sexp.to_string @@ sexp_of_cell x)
+      (to_string_pretty _board);
     let icolor = inverse_color side_color in
-    let b = copy _board in
+    let b = { (copy _board) with en_passant=None } in
     match move with
     | CastleKingSide when side_color=White && can_castle_ks b White ->
       assert (get_cell_value b (VE,H1) = Some (side_color, King));
@@ -560,13 +568,32 @@ module Board = struct
         set_cell_value b from None;
         set_cell_value b cell (Some (side_color, Pawn));
         Some (icolor, b)
+      ) else
+      let en_passanted_pawn_loc = (fst cell, snd from) in
+      if (get_cell_value b from=Some(side_color,Pawn)) && (last_en_passant=Some cell)
+         && (get_cell_value b (fst cell, snd from) = Some (icolor, Pawn))
+      then (
+        (* this is en_passant *)
+        set_cell_value b from None;
+        set_cell_value b en_passanted_pawn_loc None;
+        set_cell_value b cell (Some (side_color, Pawn));
+        Some (icolor, b)
       ) else None
     | PawnTakes (file,cell) when side_color=Black ->
       let (_,up_rank) = up_cell_exn cell in
       let from = (file,up_rank) in
-      (* TODO: implement en passant *)
+
       if (get_cell_value b from = Some(side_color,Pawn)) && (get_cell_value b cell <> None) then (
         set_cell_value b from None;
+        set_cell_value b cell (Some (side_color, Pawn));
+        Some (icolor, b)
+      ) else
+      let en_passanted_pawn_loc = (fst cell, snd from) in
+      if (get_cell_value b from=Some(side_color,Pawn)) && (last_en_passant=Some cell)
+                && (get_cell_value b en_passanted_pawn_loc = Some (icolor, Pawn)) then (
+        (* this is en_passant *)
+        set_cell_value b from None;
+        set_cell_value b en_passanted_pawn_loc None;
         set_cell_value b cell (Some (side_color, Pawn));
         Some (icolor, b)
       ) else None
@@ -585,7 +612,7 @@ module Board = struct
         (* Move from starting position *)
         set_cell_value b e2 None;
         set_cell_value b e4 (Some(White,Pawn));
-        Some (inverse_color side_color, b)
+        Some (inverse_color side_color, { b with en_passant = Some e3})
       end else if (get_cell_value b e3 = Some (White,Pawn)) then begin
         set_cell_value b e3 None;
         set_cell_value b e4 (Some(White,Pawn));
@@ -599,7 +626,7 @@ module Board = struct
         (* Move from starting position *)
         set_cell_value b e2 None;
         set_cell_value b e4 (Some(side_color,Pawn));
-        Some (inverse_color side_color, b)
+        Some (inverse_color side_color, {b with en_passant=Some e3})
       end else if (get_cell_value b e3 = Some (side_color,Pawn)) then begin
         set_cell_value b e3 None;
         set_cell_value b e4 (Some(side_color,Pawn));
