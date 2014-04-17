@@ -83,9 +83,9 @@ let _ = exit 0
  *)
 (*
 let () = Pgn.parse_file "game2.pgn" *)
-
-let () = Pgn.parse_file "musketeer.pgn"
-
 (*
+let () = Pgn.parse_file "musketeer.pgn"
+ *)
+
 let () = Pgn.parse_file "ChigorinSteinitz.pgn"
-*)
+

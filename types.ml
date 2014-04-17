@@ -53,7 +53,7 @@ type figure = King | Queen | Bishop | Knight | Rook | Pawn with sexp
 (* It will be great to have something like enumerable there *)
 type file = VA|VB|VC|VD|VE|VF|VG|VH with sexp (* вертикаль *)
 type rank = H1|H2|H3|H4|H5|H6|H7|H8 with sexp (* горизонталь *)
-type cell = file*rank
+type cell = file*rank with sexp
 
 let string_of_color = function White -> "White" | Black -> "Black"
 let figure_to_char = function
@@ -72,9 +72,9 @@ let char_of_file v = Char.chr (Char.code 'a' + (int_of_file v))
 let char_of_rank h = Char.chr (Char.code '1' + (int_of_rank h))
 let string_of_cell (v,h) = sprintf "%c%c" (char_of_file v) (char_of_rank h)
 
-type mm_postfix = [`Check | `Checkmate ] option
-type mm_takes = bool
-type mm_fig_hint = [ `File of file | `Rank of rank ] option
+type mm_postfix = [`Check | `Checkmate ] option with sexp
+type mm_takes = bool with sexp
+type mm_fig_hint = [ `File of file | `Rank of rank ] option with sexp
 type move_kind =
   | CastleKingSide
   | CastleQueenSide
@@ -84,8 +84,9 @@ type move_kind =
   (* TODO: Pawn can't promote to King. Use PolyVariants *)
   | PawnMoves of cell (* when 1 <= rank <=6 *)
   | PawnPromotion of cell*figure (* TODO: figure can't be a king *)
+with sexp
 
-type move = move_kind * mm_postfix
+type move = move_kind * mm_postfix with sexp
 
 let move_equal m1 m2 = (m1=m2)
 
@@ -195,10 +196,12 @@ let string_of_pgn_file : game -> string = fun (tags, tree) ->
   sprintf "%s\n%s" tags s2
 
 module Board = struct
+  (* TODO: FEN https://en.wikipedia.org/wiki/Forsyth%E2%80%93Edwards_Notation *)
   type cell = file*rank with sexp
   type celli = int*int (* [0..7] * [0..7] *)
   type board_cell_content = (color*figure) option with sexp
   type t = board_cell_content array array with sexp
+
 
   let figure_of_char = function
     | 'K' -> King   | 'Q' -> Queen  | 'R' -> Rook
@@ -360,14 +363,12 @@ module Board = struct
     let go_b  (x,y) = (x,y-1) in
 
     let loop_gen go_f =
-      let rec loopTL ((x,y) as loc) =
+      let rec loop ((x,y) as loc) =
         if x<0 || y<0 || x>7 || y>7 then () else
-        if empty_celli b loc then loopTL (go_f loc) else
-        if b.(x).(y) = Some (who_moves, Queen) then
-          (ans:=cell_of_celli loc :: !ans; loopTL (go_f loc) )
-        else ()
+        if empty_celli b loc then loop (go_f loc) else
+        if b.(x).(y) = Some (who_moves, Queen) then ans:=cell_of_celli loc :: !ans
       in
-      loopTL
+      loop
     in
     loop_gen go_tl (go_tl celli);
     loop_gen go_tr (go_tr celli);
@@ -390,9 +391,7 @@ module Board = struct
       let rec loopTL ((x,y) as loc) =
         if x<0 || y<0 || x>7 || y>7 then () else
         if empty_celli b loc then loopTL (go_f loc) else
-        if b.(x).(y) = Some (who_moves, Bishop) then
-          (ans:=cell_of_celli loc :: !ans; loopTL (go_f loc) )
-        else ()
+        if b.(x).(y) = Some (who_moves, Bishop) then ans:= cell_of_celli loc :: !ans
       in
       loopTL
     in
@@ -413,9 +412,7 @@ module Board = struct
       let rec loop ((x,y) as loc) =
         if x<0 || y<0 || x>7 || y>7 then () else
         if empty_celli b loc then loop (go_f loc) else
-        if b.(x).(y) = Some (who_moves, Rook) then
-          (ans:=cell_of_celli loc :: !ans; loop (go_f loc) )
-        else ()
+        if b.(x).(y) = Some (who_moves, Rook) then ans:=cell_of_celli loc :: !ans
       in
       loop
     in
@@ -480,11 +477,11 @@ module Board = struct
   let can_castle_ks _board _color = true
   let can_castle_qs _ _ = true
 
-  let make_move: move -> (color * t) -> (color * t) option = fun (move,pfx) (side_color, board) ->
+  let make_move: move -> (color * t) -> (color * t) option = fun (move,pfx) (side_color, _board) ->
     printf "make_move %s %s, current board:\n%s\n%!"
-      (string_of_color side_color) (string_of_move (move,pfx)) (to_string board);
+      (string_of_color side_color) (string_of_move (move,pfx)) (to_string _board);
     let icolor = inverse_color side_color in
-    let b = copy board in
+    let b = copy _board in
     match move with
     | CastleKingSide when side_color=White && can_castle_ks b White ->
       assert (get_cell_value b (VE,H1) = Some (side_color, King));
@@ -576,9 +573,10 @@ module Board = struct
 
     | PawnTakes (file,cell) -> None
     | PawnTakesPromotion (file,cell,figure) -> None
-    | PawnMoves (_,h) when h=H1 || h=H8 -> None
-    | PawnMoves (_,h) when h=H2 && side_color=White -> None
-    | PawnMoves (_,h) when h=H7 && side_color=Black -> None
+    | PawnMoves (_,H1)
+    | PawnMoves (_,H8) -> None
+    | PawnMoves (_,H2) when side_color=White -> None
+    | PawnMoves (_,H7) when side_color=Black -> None
     | PawnMoves (v,H4) when side_color=White ->
       let e2 = (v,H2) in
       let e3 = (v,H3) in
@@ -588,7 +586,7 @@ module Board = struct
         set_cell_value b e2 None;
         set_cell_value b e4 (Some(White,Pawn));
         Some (inverse_color side_color, b)
-      end else if empty_cell b e2 && (get_cell_value b e3 = Some (White,Pawn)) then begin
+      end else if (get_cell_value b e3 = Some (White,Pawn)) then begin
         set_cell_value b e3 None;
         set_cell_value b e4 (Some(White,Pawn));
         Some (inverse_color side_color, b)
@@ -616,7 +614,6 @@ module Board = struct
       Some (inverse_color side_color, b)
     | PawnMoves dest when side_color=White  ->
       printf "Moving white pawn....\n";
-(*      let dest = (v,h) in*)
       let prev = down_cell_exn dest in
       set_cell_value b dest (get_cell_value b prev);
       set_cell_value b prev None;
@@ -635,86 +632,6 @@ module Board = struct
       Some (icolor, b)
     | PawnPromotion (_,_) -> None
 
- (*
-    let b = copy board in
-    printf "make_move '%s': cur color: %s, Current board is:\n%s\n" move_str
-      (Sexplib.Sexp.to_string_hum @@ sexp_of_color side_color)
-      (to_string b);
-    (*printf "sexp board %s\n%!" (Sexplib.Sexp.to_string_hum @@ sexp_of_t b);*)
-    let is_pawn_move = (String.length move_str=2) && is_vert move_str.[0] && is_horiz move_str.[1] in
-    let is_figure_move () =
-      let takes = String.index move_str 'x' <> None in
-      let figure =
-        match move_str.[0] with
-        | 'B' -> Bishop | 'N' -> Knight | 'R' -> Rook | 'Q' -> Queen | 'K' -> King
-        | _ -> failwith "impossible"
-      in
-      let index2 = if move_str.[1] = 'x' then 2 else 1 in
-      let dest = cell_of_string @@ String.sub move_str index2 2 in
-      (figure,takes,dest)
-    in
-
-    if is_pawn_move && side_color=White then begin
-      let (v,h) = cell_of_string move_str in
-      if h = H4 then begin
-        let e2 = (v,H2) in
-        let e3 = (v,H3) in
-        let e4 = (v,H4) in
-        if empty_cell b e3 && (get_cell_value b e2 = Some (White,Pawn)) then begin
-          (* pawn move from initial position *)
-          set_cell_value b e2 None;
-          set_cell_value b e4 (Some(White,Pawn));
-          Some (inverse_color side_color, b)
-        end else if empty_cell b e2 && (get_cell_value b e3 = Some (White,Pawn)) then begin
-          set_cell_value b e3 None;
-          set_cell_value b e4 (Some(White,Pawn));
-          Some (inverse_color side_color, b)
-        end else failwith (sprintf "Can't make pawn move '%s'" move_str)
-      end else if h=H8 then failwith "promotion is not supported" else begin
-        printf "Moving pawn....\n";
-        let dest = (v,h) in
-        let prev = down_cell_exn dest in
-        set_cell_value b dest (get_cell_value b prev);
-        set_cell_value b prev None;
-        Some (inverse_color side_color, b)
-        (* failwith "TODO: implement white moves on black's board" *)
-      end
-    end else if is_pawn_move && side_color=Black then begin
-      let (v,h) = cell_of_string move_str in
-      match h with
-      | H5 ->
-        let e7 = (v,H7) in
-        let e6 = (v,H6) in
-        let e5 = (v,H5) in
-        if empty_cell b e6 && (get_cell_value b e7 = Some (Black,Pawn)) then begin
-          (* pawn move from initial position *)
-          set_cell_value b e7 None;
-          set_cell_value b e5 (Some(White,Pawn));
-          Some (inverse_color side_color, b)
-        end else if  (get_cell_value b e6 = Some (Black,Pawn)) then begin
-          set_cell_value b e6 None;
-          set_cell_value b e5 (Some(White,Pawn));
-          Some (inverse_color side_color, b)
-        end else failwith (sprintf "Can't make pawn move '%s'" move_str)
-      | H6|H4|H3|H2 ->
-        let prev_hor = match h with  H6->H7 | H4->H5 | H3 -> H4 | H2->H3 | _ -> assert false in
-        if get_cell_value b (v,prev_hor) = Some (Black,Pawn) && empty_cell b (v,h) then begin
-          set_cell_value b (v,prev_hor) None;
-          set_cell_value b (v,h)        (Some (Black,Pawn));
-          Some (inverse_color side_color,b)
-        end else if h=H1 then failwith "Promotion is not supported" else begin
-          printf "Moving pawn....\n";
-          let dest = (v,h) in
-          let prev = up_cell_exn dest in
-          set_cell_value b dest (get_cell_value b prev);
-          set_cell_value b prev None;
-          Some (inverse_color side_color, b)
-       end
-      | _ -> failwith "impossible"
-    end else begin
-      let (figure,takes,dest) = is_figure_move () in
-      Option.(move_figure b side_color figure takes dest >>= fun x -> Some (next_color side_color,x))
-    end*)
 end
 
 let validate_game root =
@@ -729,7 +646,7 @@ let validate_game root =
     (match root.next with
     | `NullMoves _ -> init
     | `Result _ -> init
-    | `Continue root2 -> helper init root2) >>= fun _ -> List.fold_left f init root.variants
+    | `Continue root2 -> helper init root2) >>= fun _ -> List.fold_left f board root.variants
   in
   helper (Some (White, Board.create ())) root
 
